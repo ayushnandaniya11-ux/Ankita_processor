@@ -1,0 +1,40 @@
+{
+  "name": "ankita-processors",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ankita Processors — Women's Clothing E-commerce Platform",
+  "scripts": {
+    "dev": "pnpm --parallel -r run dev",
+    "dev:web": "pnpm --filter=@ankita/web run dev",
+    "dev:admin": "pnpm --filter=@ankita/admin run dev",
+    "dev:api": "pnpm --filter=@ankita/api run dev",
+    "build": "turbo build",
+    "build:web": "turbo build --filter=@ankita/web",
+    "build:admin": "turbo build --filter=@ankita/admin",
+    "build:api": "turbo build --filter=@ankita/api",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "clean": "turbo clean && rimraf node_modules",
+    "db:migrate": "pnpm --filter=@ankita/api run migration:run",
+    "db:rollback": "pnpm --filter=@ankita/api run migration:rollback",
+    "db:seed": "pnpm --filter=@ankita/api run db:seed",
+    "db:fresh": "pnpm --filter=@ankita/api run migration:fresh"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.0",
+    "rimraf": "^5.0.0",
+    "turbo": "^2.1.0",
+    "typescript": "^5.5.0"
+  },
+  "packageManager": "pnpm@9.1.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "dependencies": {
+    "tailwindcss-animate": "^1.0.7"
+  }
+}
