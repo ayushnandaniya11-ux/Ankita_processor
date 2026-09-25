@@ -4,26 +4,50 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Light theme — warm ivory & rose */
+    --background: 30 20% 98%;
+    --foreground: 20 14% 8%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 20 14% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
+    --popover-foreground: 20 14% 8%;
+    --primary: 345 75% 35%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --secondary: 30 15% 94%;
+    --secondary-foreground: 20 14% 8%;
+    --muted: 30 12% 93%;
+    --muted-foreground: 20 10% 42%;
+    --accent: 340 30% 92%;
+    --accent-foreground: 345 75% 28%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --border: 30 15% 88%;
+    --input: 30 15% 88%;
+    --ring: 345 75% 35%;
     --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark theme — deep charcoal with rose accents */
+    --background: 220 13% 9%;
+    --foreground: 30 15% 93%;
+    --card: 220 13% 12%;
+    --card-foreground: 30 15% 93%;
+    --popover: 220 13% 11%;
+    --popover-foreground: 30 15% 93%;
+    --primary: 345 70% 55%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 220 10% 18%;
+    --secondary-foreground: 30 15% 90%;
+    --muted: 220 10% 16%;
+    --muted-foreground: 220 8% 55%;
+    --accent: 220 10% 20%;
+    --accent-foreground: 345 60% 72%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 10% 18%;
+    --input: 220 10% 18%;
+    --ring: 345 70% 55%;
   }
 
   * {
@@ -37,6 +61,7 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 

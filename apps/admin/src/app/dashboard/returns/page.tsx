@@ -3,11 +3,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, Badge } from '@ankita/ui'
 import { FileText, CheckCircle2, XCircle } from 'lucide-react'
 
-const MOCK_RETURNS = [
-  { id: 'RET-091', orderId: 'ORD-7390', customer: 'Priya Patel', reason: 'Size too small', status: 'Pending', requestedOn: '2026-09-24' },
-  { id: 'RET-090', orderId: 'ORD-7388', customer: 'Samantha Smith', reason: 'Defective item', status: 'Approved', requestedOn: '2026-09-23' },
-  { id: 'RET-089', orderId: 'ORD-7350', customer: 'Neha Gupta', reason: 'Changed mind', status: 'Rejected', requestedOn: '2026-09-20' },
-]
+const MOCK_RETURNS = [] as any[]
 
 export default function ReturnsPage() {
   return (

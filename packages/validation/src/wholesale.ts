@@ -1,5 +1,12 @@
 import { z } from 'zod'
-import { nameSchema, emailSchema, phoneSchema, passwordSchema, gstinSchema, pincodeSchema } from './common'
+import {
+  nameSchema,
+  emailSchema,
+  phoneSchema,
+  passwordSchema,
+  gstinSchema,
+  pincodeSchema,
+} from './common'
 
 export const wholesaleRegisterSchema = z
   .object({

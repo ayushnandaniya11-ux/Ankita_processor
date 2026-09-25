@@ -15,23 +15,23 @@ import {
 } from 'recharts'
 
 const revenueData = [
-  { name: 'Jan', total: Math.floor(Math.random() * 50000) + 10000 },
-  { name: 'Feb', total: Math.floor(Math.random() * 50000) + 10000 },
-  { name: 'Mar', total: Math.floor(Math.random() * 50000) + 10000 },
-  { name: 'Apr', total: Math.floor(Math.random() * 50000) + 10000 },
-  { name: 'May', total: Math.floor(Math.random() * 50000) + 10000 },
-  { name: 'Jun', total: Math.floor(Math.random() * 50000) + 10000 },
-  { name: 'Jul', total: Math.floor(Math.random() * 50000) + 10000 },
+  { name: 'Jan', total: 0 },
+  { name: 'Feb', total: 0 },
+  { name: 'Mar', total: 0 },
+  { name: 'Apr', total: 0 },
+  { name: 'May', total: 0 },
+  { name: 'Jun', total: 0 },
+  { name: 'Jul', total: 0 },
 ]
 
 const salesData = [
-  { name: 'Mon', sales: 40 },
-  { name: 'Tue', sales: 30 },
-  { name: 'Wed', sales: 20 },
-  { name: 'Thu', sales: 27 },
-  { name: 'Fri', sales: 18 },
-  { name: 'Sat', sales: 23 },
-  { name: 'Sun', sales: 34 },
+  { name: 'Mon', sales: 0 },
+  { name: 'Tue', sales: 0 },
+  { name: 'Wed', sales: 0 },
+  { name: 'Thu', sales: 0 },
+  { name: 'Fri', sales: 0 },
+  { name: 'Sat', sales: 0 },
+  { name: 'Sun', sales: 0 },
 ]
 
 export default function AnalyticsPage() {
@@ -40,7 +40,7 @@ export default function AnalyticsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-          <p className="text-muted-foreground">Monitor your store's performance and revenue.</p>
+          <p className="text-muted-foreground">Monitor your store&apos;s performance and revenue.</p>
         </div>
         <div className="w-[180px]">
           <Select defaultValue="30">
@@ -64,10 +64,9 @@ export default function AnalyticsPage() {
             <IndianRupee className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">₹4,231.89</div>
-            <p className="text-xs text-green-600 flex items-center mt-1">
-              <ArrowUpRight className="mr-1 h-3 w-3" />
-              +20.1% from last month
+            <div className="text-2xl font-bold">₹0.00</div>
+            <p className="text-xs text-muted-foreground flex items-center mt-1">
+              0% from last month
             </p>
           </CardContent>
         </Card>
@@ -77,10 +76,9 @@ export default function AnalyticsPage() {
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
-            <p className="text-xs text-green-600 flex items-center mt-1">
-              <ArrowUpRight className="mr-1 h-3 w-3" />
-              +180.1% from last month
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground flex items-center mt-1">
+              0% from last month
             </p>
           </CardContent>
         </Card>
@@ -90,10 +88,9 @@ export default function AnalyticsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12,234</div>
-            <p className="text-xs text-green-600 flex items-center mt-1">
-              <ArrowUpRight className="mr-1 h-3 w-3" />
-              +19% from last month
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground flex items-center mt-1">
+              0% from last month
             </p>
           </CardContent>
         </Card>
@@ -103,10 +100,9 @@ export default function AnalyticsPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3.2%</div>
-            <p className="text-xs text-red-500 flex items-center mt-1">
-              <ArrowDownRight className="mr-1 h-3 w-3" />
-              -1.4% from last month
+            <div className="text-2xl font-bold">0%</div>
+            <p className="text-xs text-muted-foreground flex items-center mt-1">
+              0% from last month
             </p>
           </CardContent>
         </Card>

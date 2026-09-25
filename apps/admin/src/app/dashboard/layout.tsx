@@ -7,7 +7,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50">
+    <div className="flex h-screen overflow-hidden bg-background transition-colors">
       {/* Desktop sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <AdminSidebar />

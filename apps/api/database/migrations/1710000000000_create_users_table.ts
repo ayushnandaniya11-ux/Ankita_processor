@@ -11,7 +11,7 @@ export default class extends BaseSchema {
       table.string('password').nullable()
       table.string('phone').nullable()
       table.string('role').notNullable().defaultTo('CUSTOMER')
-      
+
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })

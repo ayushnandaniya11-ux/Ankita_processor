@@ -15,9 +15,14 @@ export default function CheckoutSuccessPage({ searchParams }: Props) {
       {searchParams.order && (
         <p className="text-muted-foreground mb-2">Order Number: <span className="font-semibold text-foreground">{searchParams.order}</span></p>
       )}
-      <p className="text-muted-foreground max-w-md mb-8">
+      <p className="text-muted-foreground max-w-md mb-2">
         Thank you for shopping with Ankita Processors! You will receive a confirmation email shortly with your order details.
       </p>
+      <div className="bg-muted p-4 rounded-lg mb-8 max-w-md w-full text-sm">
+        <p className="font-semibold text-foreground mb-1">Shipping Partner</p>
+        <p className="text-muted-foreground">Your order will be shipped securely via <span className="font-medium text-foreground">Delhivery Direct</span>.</p>
+        <p className="text-muted-foreground mt-2">You will receive an AWB tracking number once the order is dispatched.</p>
+      </div>
       <div className="flex gap-3">
         <Button asChild>
           <Link href="/orders">View My Orders</Link>

@@ -2,12 +2,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, Input } from '@ankita/ui'
 
-const MOCK_INVENTORY = [
-  { sku: 'DRS-001-SM', product: 'Floral Summer Dress', variant: 'Small', stock: 12, reorderLevel: 5 },
-  { sku: 'DRS-001-MD', product: 'Floral Summer Dress', variant: 'Medium', stock: 4, reorderLevel: 10 },
-  { sku: 'DRS-001-LG', product: 'Floral Summer Dress', variant: 'Large', stock: 0, reorderLevel: 5 },
-  { sku: 'TOP-042-OS', product: 'Silk Blouse', variant: 'One Size', stock: 45, reorderLevel: 15 },
-]
+const MOCK_INVENTORY = [] as any[]
 
 export default function InventoryPage() {
   return (

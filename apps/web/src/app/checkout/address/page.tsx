@@ -32,12 +32,17 @@ export default function CheckoutAddressPage() {
           </div>
         </div>
         <div className="lg:col-span-1">
-          <div className="rounded-xl border bg-white p-5 space-y-3">
+          <div className="rounded-xl border bg-card p-5 space-y-3">
             <h2 className="font-semibold">Order Summary</h2>
             <div className="text-sm text-muted-foreground space-y-2">
               <div className="flex justify-between"><span>Subtotal</span><span>₹0</span></div>
-              <div className="flex justify-between"><span>Shipping</span><span>Free</span></div>
-              <div className="flex justify-between font-semibold text-foreground"><span>Total</span><span>₹0</span></div>
+              <div className="flex justify-between flex-col">
+                <div className="flex justify-between">
+                  <span>Shipping</span><span className="text-emerald-600 font-medium">Free</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">via Delhivery Direct</span>
+              </div>
+              <div className="flex justify-between font-semibold text-foreground pt-2 border-t"><span>Total</span><span>₹0</span></div>
             </div>
             <Button className="w-full" disabled>Continue to Payment</Button>
           </div>

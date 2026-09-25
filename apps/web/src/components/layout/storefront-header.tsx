@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { ShoppingBag, Heart, Search, User, Menu, X, ChevronDown } from 'lucide-react'
-import { Button, Sheet, SheetContent, SheetTrigger, Separator } from '@ankita/ui'
+import { Button, Sheet, SheetContent, SheetTrigger, Separator, ThemeToggle } from '@ankita/ui'
 import { APP_NAME } from '@ankita/config'
 import { useCart } from '@/hooks/use-cart'
 import { useAuth } from '@/hooks/use-auth'
@@ -18,12 +18,9 @@ const NAV_LINKS = [
     href: '/categories',
     children: [
       { label: 'Sarees', href: '/categories/sarees' },
-      { label: 'Kurtis', href: '/categories/kurtis' },
-      { label: 'Dresses', href: '/categories/dresses' },
-      { label: 'Tops', href: '/categories/tops' },
-      { label: 'Bottom Wear', href: '/categories/bottom-wear' },
-      { label: 'Co-ord Sets', href: '/categories/co-ord-sets' },
-      { label: 'Ethnic Wear', href: '/categories/ethnic-wear' },
+      { label: 'Dupattas', href: '/categories/dupattas' },
+      { label: 'Scarves', href: '/categories/scarves' },
+      { label: 'Dress Material', href: '/categories/dress-material' },
     ],
   },
 ]
@@ -37,7 +34,7 @@ export function StorefrontHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors">
         <div className="container-wide flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight text-foreground">
@@ -54,7 +51,7 @@ export function StorefrontHeader() {
                     <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
                   </button>
                   {/* Mega dropdown */}
-                  <div className="invisible absolute left-1/2 top-full z-50 mt-2 w-56 -translate-x-1/2 rounded-md border bg-white p-2 opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
+                  <div className="invisible absolute left-1/2 top-full z-50 mt-2 w-56 -translate-x-1/2 rounded-md border bg-popover p-2 opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
                     {link.children.map((child) => (
                       <Link
                         key={child.href}
@@ -115,6 +112,8 @@ export function StorefrontHeader() {
                 </span>
               )}
             </Button>
+
+            <ThemeToggle />
 
             {/* Mobile menu */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>

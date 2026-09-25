@@ -3,11 +3,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, Badge } from '@ankita/ui'
 import { PackageSearch } from 'lucide-react'
 
-const MOCK_SHIPPING = [
-  { id: 'SHP-9901', orderId: 'ORD-7392', courier: 'BlueDart', awb: 'BD88291002', status: 'Label Created', date: '2026-09-24' },
-  { id: 'SHP-9900', orderId: 'ORD-7391', courier: 'Delhivery', awb: 'DEL99210023', status: 'In Transit', date: '2026-09-23' },
-  { id: 'SHP-9899', orderId: 'ORD-7390', courier: 'FedEx', awb: 'FX10293022', status: 'Delivered', date: '2026-09-22' },
-]
+const MOCK_SHIPPING = [] as any[]
 
 export default function ShippingPage() {
   return (

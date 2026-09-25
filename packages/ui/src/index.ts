@@ -96,3 +96,7 @@ export { EmptyState } from './components/empty-state'
 export { PageHeader } from './components/page-header'
 export { DataTableSkeleton } from './components/data-table-skeleton'
 export { ProductCardSkeleton } from './components/product-card-skeleton'
+
+// Theme
+export { ThemeProvider } from './components/theme-provider'
+export { ThemeToggle } from './components/theme-toggle'

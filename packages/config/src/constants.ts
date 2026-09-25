@@ -3,8 +3,9 @@
 // ============================================
 
 export const APP_NAME = 'Ankita Processors'
-export const APP_TAGLINE = 'Premium Women\'s Clothing'
-export const APP_DESCRIPTION = 'Discover exquisite women\'s fashion — sarees, kurtis, dresses, and more from Ankita Processors.'
+export const APP_TAGLINE = "Premium Women's Clothing"
+export const APP_DESCRIPTION =
+  "Discover exquisite women's fashion — sarees, kurtis, dresses, and more from Ankita Processors."
 
 export const CURRENCY = 'INR'
 export const CURRENCY_SYMBOL = '₹'
@@ -45,37 +46,64 @@ export const PRODUCT_SORT_OPTIONS = [
 export const ADMIN_SIDEBAR_SECTIONS = [
   {
     title: 'Overview',
-    items: [{ label: 'Dashboard', href: '/admin/dashboard', icon: 'LayoutDashboard', permission: null }],
+    items: [
+      { label: 'Dashboard', href: '/admin/dashboard', icon: 'LayoutDashboard', permission: null },
+    ],
   },
   {
     title: 'Sales',
     items: [
       { label: 'Orders', href: '/admin/orders', icon: 'ShoppingBag', permission: 'orders.read' },
       { label: 'Returns', href: '/admin/returns', icon: 'RotateCcw', permission: 'returns.read' },
-      { label: 'Payments', href: '/admin/payments', icon: 'CreditCard', permission: 'payments.read' },
+      {
+        label: 'Payments',
+        href: '/admin/payments',
+        icon: 'CreditCard',
+        permission: 'payments.read',
+      },
     ],
   },
   {
     title: 'Catalog',
     items: [
       { label: 'Products', href: '/admin/products', icon: 'Package', permission: 'products.read' },
-      { label: 'Categories', href: '/admin/categories', icon: 'FolderTree', permission: 'products.read' },
+      {
+        label: 'Categories',
+        href: '/admin/categories',
+        icon: 'FolderTree',
+        permission: 'products.read',
+      },
       { label: 'Pricing', href: '/admin/pricing', icon: 'Tags', permission: 'products.read' },
-      { label: 'Inventory', href: '/admin/inventory', icon: 'Warehouse', permission: 'inventory.read' },
+      {
+        label: 'Inventory',
+        href: '/admin/inventory',
+        icon: 'Warehouse',
+        permission: 'inventory.read',
+      },
     ],
   },
   {
     title: 'Customers',
     items: [
       { label: 'Customers', href: '/admin/customers', icon: 'Users', permission: 'customers.read' },
-      { label: 'Wholesalers', href: '/admin/wholesalers', icon: 'Building', permission: 'customers.read' },
+      {
+        label: 'Wholesalers',
+        href: '/admin/wholesalers',
+        icon: 'Building',
+        permission: 'customers.read',
+      },
     ],
   },
   {
     title: 'Shipping',
     items: [
       { label: 'Logistics', href: '/admin/logistics', icon: 'Truck', permission: 'logistics.read' },
-      { label: 'Waybills', href: '/admin/waybills', icon: 'FileBarChart', permission: 'logistics.read' },
+      {
+        label: 'Waybills',
+        href: '/admin/waybills',
+        icon: 'FileBarChart',
+        permission: 'logistics.read',
+      },
     ],
   },
   {
@@ -88,9 +116,19 @@ export const ADMIN_SIDEBAR_SECTIONS = [
   {
     title: 'Team',
     items: [
-      { label: 'Employees', href: '/admin/employees', icon: 'UserCog', permission: 'employees.read' },
+      {
+        label: 'Employees',
+        href: '/admin/employees',
+        icon: 'UserCog',
+        permission: 'employees.read',
+      },
       { label: 'Roles', href: '/admin/roles', icon: 'Shield', permission: 'employees.read' },
-      { label: 'Permissions', href: '/admin/permissions', icon: 'Lock', permission: 'employees.read' },
+      {
+        label: 'Permissions',
+        href: '/admin/permissions',
+        icon: 'Lock',
+        permission: 'employees.read',
+      },
     ],
   },
   {

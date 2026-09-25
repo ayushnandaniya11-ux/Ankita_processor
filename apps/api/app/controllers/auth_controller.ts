@@ -12,10 +12,13 @@ const loginValidator = vine.compile(
 const registerValidator = vine.compile(
   vine.object({
     name: vine.string().trim().minLength(3),
-    email: vine.string().email().unique(async (db, value) => {
-      const user = await db.from('users').where('email', value).first()
-      return !user
-    }),
+    email: vine
+      .string()
+      .email()
+      .unique(async (db, value) => {
+        const user = await db.from('users').where('email', value).first()
+        return !user
+      }),
     password: vine.string().minLength(8),
     phone: vine.string().optional(),
   })
@@ -35,7 +38,7 @@ export default class AuthController {
         name: user.name,
         email: user.email,
         role: user.role,
-      }
+      },
     })
   }
 
@@ -52,7 +55,7 @@ export default class AuthController {
         name: user.name,
         email: user.email,
         role: user.role,
-      }
+      },
     })
   }
 

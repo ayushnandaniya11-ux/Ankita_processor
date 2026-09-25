@@ -3,11 +3,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, Badge } from '@ankita/ui'
 import { Star, Trash2 } from 'lucide-react'
 
-const MOCK_REVIEWS = [
-  { id: 1, product: 'Floral Summer Dress', customer: 'Priya Patel', rating: 5, comment: 'Absolutely love the fabric! Perfect for summer.', status: 'Published', date: '2026-09-23' },
-  { id: 2, product: 'Silk Blouse', customer: 'Kavita Iyer', rating: 4, comment: 'Great quality, but the sleeves are a bit long.', status: 'Published', date: '2026-09-22' },
-  { id: 3, product: 'Denim Jacket', customer: 'Anonymous', rating: 1, comment: 'Very bad delivery experience.', status: 'Hidden', date: '2026-09-20' },
-]
+const MOCK_REVIEWS = [] as any[]
 
 export default function ReviewsPage() {
   return (

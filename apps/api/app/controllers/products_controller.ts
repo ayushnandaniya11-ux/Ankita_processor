@@ -36,7 +36,7 @@ export default class ProductsController {
   async update({ params, request, response }: HttpContext) {
     const product = await Product.findOrFail(params.id)
     const data = await request.validateUsing(productValidator)
-    
+
     product.merge(data)
     await product.save()
 

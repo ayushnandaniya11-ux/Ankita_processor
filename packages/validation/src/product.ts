@@ -1,11 +1,22 @@
 import { z } from 'zod'
-import { nameSchema, slugSchema, priceSchema, hsnCodeSchema, quantitySchema, percentageSchema } from './common'
+import {
+  nameSchema,
+  slugSchema,
+  priceSchema,
+  hsnCodeSchema,
+  quantitySchema,
+  percentageSchema,
+} from './common'
 
 export const productVariantSchema = z.object({
   id: z.string().optional(),
   sku: z.string().min(1, 'SKU is required'),
   color: z.string().min(1, 'Color is required'),
-  colorHex: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional().or(z.literal('')),
+  colorHex: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color')
+    .optional()
+    .or(z.literal('')),
   size: z.string().min(1, 'Size is required'),
   mrp: priceSchema,
   sellingPrice: priceSchema,
@@ -21,7 +32,11 @@ export const productSchema = z.object({
   slug: slugSchema,
   sku: z.string().min(1, 'SKU is required'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
-  shortDescription: z.string().max(200, 'Short description must be at most 200 characters').optional().or(z.literal('')),
+  shortDescription: z
+    .string()
+    .max(200, 'Short description must be at most 200 characters')
+    .optional()
+    .or(z.literal('')),
   categoryId: z.string().min(1, 'Category is required'),
   subcategoryId: z.string().optional().or(z.literal('')),
   brand: z.string().optional().or(z.literal('')),

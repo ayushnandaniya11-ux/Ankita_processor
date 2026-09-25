@@ -15,7 +15,7 @@ export default function WholesalePage() {
         <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
         <h1 className="text-4xl font-bold tracking-tight mb-4">Wholesale Partnership</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Join thousands of retailers who trust Ankita Processors for premium women's clothing at wholesale prices. Get access to exclusive bulk pricing, early collection previews, and dedicated support.
+          Join thousands of retailers who trust Ankita Processors for premium women&apos;s clothing at wholesale prices. Get access to exclusive bulk pricing, early collection previews, and dedicated support.
         </p>
       </div>
 
@@ -25,7 +25,7 @@ export default function WholesalePage() {
           { title: 'Min. Order ₹5,000', desc: 'Low minimum order quantity to get started' },
           { title: 'Dedicated Support', desc: 'Personal account manager for all wholesale partners' },
         ].map((feature) => (
-          <div key={feature.title} className="rounded-xl border bg-white p-6 text-center">
+          <div key={feature.title} className="rounded-xl border bg-card p-6 text-center">
             <h3 className="font-semibold mb-2">{feature.title}</h3>
             <p className="text-sm text-muted-foreground">{feature.desc}</p>
           </div>

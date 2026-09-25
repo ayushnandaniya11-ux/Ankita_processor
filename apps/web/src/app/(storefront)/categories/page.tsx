@@ -8,14 +8,10 @@ export const metadata: Metadata = {
 }
 
 const CATEGORIES = [
-  { name: 'Sarees', slug: 'sarees', emoji: '🪭', count: '200+ styles' },
-  { name: 'Kurtis', slug: 'kurtis', emoji: '👘', count: '350+ styles' },
-  { name: 'Dresses', slug: 'dresses', emoji: '👗', count: '150+ styles' },
-  { name: 'Tops', slug: 'tops', emoji: '👕', count: '180+ styles' },
-  { name: 'Bottom Wear', slug: 'bottom-wear', emoji: '👖', count: '120+ styles' },
-  { name: 'Co-ord Sets', slug: 'co-ord-sets', emoji: '✨', count: '80+ styles' },
-  { name: 'Ethnic Wear', slug: 'ethnic-wear', emoji: '🌸', count: '250+ styles' },
-  { name: 'Accessories', slug: 'accessories', emoji: '💍', count: '90+ styles' },
+  { name: 'Sarees', slug: 'sarees', emoji: '🥻', count: '0 Products' },
+  { name: 'Dupattas', slug: 'dupattas', emoji: '🧣', count: '0 Products' },
+  { name: 'Scarves', slug: 'scarves', emoji: '🧶', count: '0 Products' },
+  { name: 'Dress Material', slug: 'dress-material', emoji: '🧵', count: '0 Products' },
 ]
 
 export default function CategoriesPage() {
@@ -34,7 +30,7 @@ export default function CategoriesPage() {
           <Link
             key={cat.slug}
             href={`/categories/${cat.slug}`}
-            className="group rounded-xl border bg-white p-6 text-center transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-foreground/20"
+            className="group rounded-xl border bg-card p-6 text-center transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-foreground/20"
           >
             <div className="mb-3 text-4xl">{cat.emoji}</div>
             <h2 className="font-semibold text-foreground">{cat.name}</h2>

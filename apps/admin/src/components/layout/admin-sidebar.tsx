@@ -8,8 +8,7 @@ import {
   Menu, X,
 } from 'lucide-react'
 import { cn } from '@ankita/utils'
-import { Button, Avatar, AvatarFallback, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@ankita/ui'
-import { useState } from 'react'
+import { Button, Avatar, AvatarFallback, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, ThemeToggle } from '@ankita/ui'
 import { APP_NAME } from '@ankita/config'
 
 const NAV_GROUPS = [
@@ -63,7 +62,7 @@ export function AdminSidebar({ mobile, onClose }: AdminSidebarProps) {
 
   return (
     <aside className={cn(
-      'flex h-full w-60 flex-col border-r bg-white',
+      'flex h-full w-60 flex-col border-r bg-[hsl(var(--sidebar-bg))] transition-colors',
       mobile && 'fixed inset-y-0 left-0 z-50 shadow-xl'
     )}>
       {/* Logo */}
@@ -96,7 +95,7 @@ export function AdminSidebar({ mobile, onClose }: AdminSidebarProps) {
                   className={cn(
                     'mb-0.5 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-foreground text-background'
+                      ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   )}
                 >
@@ -145,7 +144,7 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const title = pathname.split('/').pop()?.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) || 'Dashboard'
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">
+    <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 transition-colors">
       <div className="flex items-center gap-3">
         <button onClick={onMenuClick} className="md:hidden text-muted-foreground hover:text-foreground">
           <Menu className="h-5 w-5" />
@@ -153,6 +152,7 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
         <h1 className="text-base font-semibold text-foreground">{title}</h1>
       </div>
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <Button variant="outline" size="sm" asChild>
           <Link href="/" target="_blank" rel="noopener noreferrer">
             <Store className="mr-2 h-3.5 w-3.5" />

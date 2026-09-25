@@ -30,7 +30,7 @@ export default class CategoriesController {
   async update({ params, request, response }: HttpContext) {
     const category = await Category.findOrFail(params.id)
     const data = await request.validateUsing(categoryValidator)
-    
+
     category.merge(data)
     await category.save()
 

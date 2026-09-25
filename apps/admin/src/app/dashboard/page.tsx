@@ -6,19 +6,19 @@ import { formatCurrency } from '@ankita/utils'
 export const metadata: Metadata = { title: 'Dashboard' }
 
 const STATS = [
-  { title: "Today's Revenue", value: formatCurrency(24580), change: '+12.5%', icon: TrendingUp, positive: true },
-  { title: 'Orders Today', value: '48', change: '+8 vs yesterday', icon: ShoppingCart, positive: true },
-  { title: 'Products', value: '1,247', change: '+12 this week', icon: Package, positive: true },
-  { title: 'Customers', value: '8,934', change: '+156 this month', icon: Users, positive: true },
+  { title: "Today's Revenue", value: formatCurrency(0), change: '0%', icon: TrendingUp, positive: true },
+  { title: 'Orders Today', value: '0', change: '0 vs yesterday', icon: ShoppingCart, positive: true },
+  { title: 'Products', value: '0', change: '0 this week', icon: Package, positive: true },
+  { title: 'Customers', value: '0', change: '0 this month', icon: Users, positive: true },
 ]
 
-const RECENT_ORDERS = [
-  { id: 'AP-0048', customer: 'Priya Sharma', amount: 3499, status: 'CONFIRMED', time: '5 mins ago' },
-  { id: 'AP-0047', customer: 'Anjali Mehta', amount: 6999, status: 'PACKED', time: '23 mins ago' },
-  { id: 'AP-0046', customer: 'Sneha Patel', amount: 2499, status: 'SHIPPED', time: '1 hr ago' },
-  { id: 'AP-0045', customer: 'Kavita Rao', amount: 8999, status: 'DELIVERED', time: '3 hrs ago' },
-  { id: 'AP-0044', customer: 'Meera Singh', amount: 1599, status: 'CONFIRMED', time: '5 hrs ago' },
-]
+const RECENT_ORDERS = [] as Array<{
+  id: string
+  customer: string
+  amount: number
+  status: string
+  time: string
+}>
 
 const STATUS_COLORS: Record<string, string> = {
   CONFIRMED: 'bg-blue-100 text-blue-800',
@@ -93,21 +93,21 @@ export default function DashboardPage() {
         <Card>
           <CardHeader><CardTitle className="text-sm font-medium text-muted-foreground">Low Stock Alerts</CardTitle></CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-amber-600">7</p>
+            <p className="text-2xl font-bold text-amber-600">0</p>
             <p className="text-xs text-muted-foreground">Products need restocking</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle className="text-sm font-medium text-muted-foreground">Pending Returns</CardTitle></CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-orange-600">3</p>
+            <p className="text-2xl font-bold text-orange-600">0</p>
             <p className="text-xs text-muted-foreground">Returns awaiting action</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle className="text-sm font-medium text-muted-foreground">Wholesale Applications</CardTitle></CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-blue-600">2</p>
+            <p className="text-2xl font-bold text-blue-600">0</p>
             <p className="text-xs text-muted-foreground">Pending approval</p>
           </CardContent>
         </Card>

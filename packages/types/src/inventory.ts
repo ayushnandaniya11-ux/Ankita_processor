@@ -5,14 +5,7 @@
 import type { BaseEntity } from './common'
 
 export type InventoryMovementType =
-  | 'PURCHASE'
-  | 'SALE'
-  | 'RETURN'
-  | 'EXCHANGE'
-  | 'ADJUSTMENT'
-  | 'DAMAGE'
-  | 'RESERVATION'
-  | 'RELEASE'
+  'PURCHASE' | 'SALE' | 'RETURN' | 'EXCHANGE' | 'ADJUSTMENT' | 'DAMAGE' | 'RESERVATION' | 'RELEASE'
 
 export const MOVEMENT_TYPE_LABELS: Record<InventoryMovementType, string> = {
   PURCHASE: 'Purchase',

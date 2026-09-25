@@ -13,7 +13,10 @@ export const employeeSchema = z.object({
 
 export const roleSchema = z.object({
   name: nameSchema,
-  slug: z.string().min(2).regex(/^[A-Z_]+$/, 'Slug must be uppercase letters and underscores'),
+  slug: z
+    .string()
+    .min(2)
+    .regex(/^[A-Z_]+$/, 'Slug must be uppercase letters and underscores'),
   description: z.string().max(500).optional().or(z.literal('')),
   permissionIds: z.array(z.string()).min(1, 'At least one permission is required'),
 })

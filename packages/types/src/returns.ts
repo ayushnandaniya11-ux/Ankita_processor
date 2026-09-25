@@ -17,11 +17,7 @@ export type ReturnStatus =
 export type ReturnType = 'RETURN' | 'EXCHANGE'
 
 export type ReturnReason =
-  | 'WRONG_SIZE'
-  | 'DAMAGED_PRODUCT'
-  | 'WRONG_PRODUCT'
-  | 'QUALITY_ISSUE'
-  | 'OTHER'
+  'WRONG_SIZE' | 'DAMAGED_PRODUCT' | 'WRONG_PRODUCT' | 'QUALITY_ISSUE' | 'OTHER'
 
 export const RETURN_STATUS_LABELS: Record<ReturnStatus, string> = {
   REQUESTED: 'Requested',

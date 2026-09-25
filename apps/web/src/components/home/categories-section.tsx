@@ -1,13 +1,10 @@
 import Link from 'next/link'
 
 const CATEGORIES = [
-  { name: 'Sarees', slug: 'sarees', emoji: '🪭', description: 'Handcrafted silk, cotton & designer sarees' },
-  { name: 'Kurtis', slug: 'kurtis', emoji: '👘', description: 'Casual to festive kurti styles' },
-  { name: 'Dresses', slug: 'dresses', emoji: '👗', description: 'Western & fusion dresses' },
-  { name: 'Tops', slug: 'tops', emoji: '👕', description: 'Trendy tops & shirts' },
-  { name: 'Bottom Wear', slug: 'bottom-wear', emoji: '👖', description: 'Palazzos, leggings & skirts' },
-  { name: 'Co-ord Sets', slug: 'co-ord-sets', emoji: '✨', description: 'Matching sets for every occasion' },
-  { name: 'Ethnic Wear', slug: 'ethnic-wear', emoji: '🌸', description: 'Anarkalis, lehengas & suits' },
+  { name: 'Sarees', slug: 'sarees', emoji: '🥻', description: 'Handcrafted silk, cotton & designer sarees' },
+  { name: 'Dupattas', slug: 'dupattas', emoji: '🧣', description: 'Beautifully woven and embroidered dupattas' },
+  { name: 'Scarves', slug: 'scarves', emoji: '🧶', description: 'Lightweight & stylish scarves for every occasion' },
+  { name: 'Dress Material', slug: 'dress-material', emoji: '🧵', description: 'Unstitched fabrics and premium dress materials' },
 ]
 
 export function CategoriesSection() {
@@ -28,7 +25,7 @@ export function CategoriesSection() {
             <Link
               key={cat.slug}
               href={`/categories/${cat.slug}`}
-              className="group relative overflow-hidden rounded-xl border bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-md"
+              className="group relative overflow-hidden rounded-xl border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-md"
             >
               <div className="mb-3 text-3xl">{cat.emoji}</div>
               <h3 className="font-semibold text-foreground text-sm leading-tight">{cat.name}</h3>

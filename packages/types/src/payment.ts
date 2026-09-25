@@ -5,12 +5,7 @@
 import type { BaseEntity } from './common'
 
 export type PaymentStatus =
-  | 'PENDING'
-  | 'AUTHORIZED'
-  | 'CAPTURED'
-  | 'FAILED'
-  | 'REFUNDED'
-  | 'PARTIALLY_REFUNDED'
+  'PENDING' | 'AUTHORIZED' | 'CAPTURED' | 'FAILED' | 'REFUNDED' | 'PARTIALLY_REFUNDED'
 
 export type PaymentMethod = 'ONLINE' | 'COD' | 'UPI' | 'CARD' | 'NET_BANKING' | 'WALLET'
 

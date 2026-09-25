@@ -20,7 +20,7 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* Sidebar */}
         <nav className="md:col-span-1">
-          <div className="rounded-xl border bg-white overflow-hidden">
+          <div className="rounded-xl border bg-card overflow-hidden">
             <div className="p-5 border-b">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-background text-lg font-bold mb-3">A</div>
               <p className="font-semibold">Your Name</p>
@@ -38,7 +38,7 @@ export default function ProfilePage() {
         </nav>
         {/* Content */}
         <div className="md:col-span-2">
-          <div className="rounded-xl border bg-white p-6">
+          <div className="rounded-xl border bg-card p-6">
             <h2 className="font-semibold mb-4">Welcome to your account</h2>
             <p className="text-sm text-muted-foreground">Select an option from the menu to manage your account.</p>
           </div>

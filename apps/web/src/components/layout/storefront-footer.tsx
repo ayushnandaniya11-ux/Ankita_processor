@@ -23,7 +23,7 @@ const FOOTER_LINKS = {
 
 export function StorefrontFooter() {
   return (
-    <footer className="border-t bg-white">
+    <footer className="border-t bg-background transition-colors">
       <div className="container-wide py-12">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
@@ -32,7 +32,7 @@ export function StorefrontFooter() {
               {APP_NAME}
             </Link>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Premium women's clothing crafted with care. Celebrating Indian craftsmanship and modern style.
+              Premium women&apos;s clothing crafted with care. Celebrating Indian craftsmanship and modern style.
             </p>
             <div className="mt-4 flex items-center gap-3">
               <Link href="#" aria-label="Instagram" className="text-muted-foreground hover:text-foreground transition-colors">

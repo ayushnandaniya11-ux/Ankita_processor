@@ -20,7 +20,7 @@ export function HeroSection() {
 
         {/* Description */}
         <p className="mt-6 max-w-xl text-base text-muted-foreground md:text-lg">
-          Discover our curated collection of premium women's fashion — from handcrafted sarees to contemporary co-ord sets, celebrating the modern Indian woman.
+          Discover our curated collection of premium women&apos;s fashion — from handcrafted sarees to contemporary co-ord sets, celebrating the modern Indian woman.
         </p>
 
         {/* CTAs */}

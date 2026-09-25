@@ -47,7 +47,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.slug}`} className="group block">
-      <div className="relative overflow-hidden rounded-lg bg-stone-100 product-card-hover">
+      <div className="relative overflow-hidden rounded-lg bg-muted product-card-hover">
         {/* Image */}
         <div className="relative aspect-[3/4]">
           {primaryImage && !imgError ? (
@@ -76,7 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Wishlist button */}
           <button
             onClick={handleWishlist}
-            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm transition-all hover:scale-110"
+            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 shadow-sm transition-all hover:scale-110"
             aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           >
             <Heart
@@ -85,7 +85,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </button>
 
           {/* Quick add overlay */}
-          <div className="absolute inset-x-0 bottom-0 translate-y-full bg-white/95 backdrop-blur p-2 transition-transform duration-200 group-hover:translate-y-0">
+          <div className="absolute inset-x-0 bottom-0 translate-y-full bg-background/95 backdrop-blur p-2 transition-transform duration-200 group-hover:translate-y-0">
             <Button
               size="sm"
               className="w-full text-xs"
