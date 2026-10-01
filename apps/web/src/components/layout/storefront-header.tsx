@@ -3,7 +3,20 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { ShoppingBag, Heart, Search, User, Menu, X, ChevronDown } from 'lucide-react'
-import { Button, Sheet, SheetContent, SheetTrigger, Separator, ThemeToggle } from '@ankita/ui'
+import { 
+  Button, 
+  Sheet, 
+  SheetContent, 
+  SheetTrigger, 
+  Separator, 
+  ThemeToggle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@ankita/ui'
 import { APP_NAME } from '@ankita/config'
 import { useCart } from '@/hooks/use-cart'
 import { useAuth } from '@/hooks/use-auth'
@@ -30,15 +43,17 @@ export function StorefrontHeader() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const { itemCount } = useCart()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors">
         <div className="container-wide flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight text-foreground">
-            <span className="text-xl font-bold tracking-widest uppercase">{APP_NAME}</span>
+          <Link href="/" className="flex items-center group">
+            <span className="font-heading font-bold text-2xl tracking-tight transition-colors group-hover:text-primary">
+              {APP_NAME}
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -92,11 +107,48 @@ export function StorefrontHeader() {
               </Button>
             </Link>
 
-            <Link href={user ? '/profile' : '/login'}>
-              <Button variant="ghost" size="icon" aria-label="Account">
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Account">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={8} className="w-56">
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="cursor-pointer w-full">View Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders" className="cursor-pointer w-full">Orders</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <button 
+                      className="cursor-pointer text-red-600 focus:text-red-600 w-full text-left flex items-center px-2 py-1.5 text-sm outline-none" 
+                      onClick={async () => {
+                        await logout()
+                        window.location.href = '/'
+                      }}
+                    >
+                      Log out
+                    </button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" size="icon" aria-label="Login">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
 
             <Button
               variant="ghost"
@@ -127,9 +179,11 @@ export function StorefrontHeader() {
                   <Link
                     href="/"
                     onClick={() => setMobileOpen(false)}
-                    className="text-xl font-bold tracking-widest uppercase"
+                    className="flex items-center justify-center py-4"
                   >
-                    {APP_NAME}
+                    <span className="font-heading font-bold text-2xl tracking-tight text-primary">
+                      {APP_NAME}
+                    </span>
                   </Link>
                   <Separator />
                   <nav className="flex flex-col gap-1">
@@ -176,6 +230,18 @@ export function StorefrontHeader() {
                         Wholesale
                       </Button>
                     </Link>
+                    {user && (
+                      <Button 
+                        variant="ghost" 
+                        className="w-full text-red-600 hover:text-red-600 hover:bg-red-50"
+                        onClick={async () => {
+                          await logout()
+                          window.location.href = '/'
+                        }}
+                      >
+                        Log out
+                      </Button>
+                    )}
                   </div>
                 </div>
               </SheetContent>

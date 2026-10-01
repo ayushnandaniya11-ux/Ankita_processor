@@ -21,6 +21,12 @@ export default class User extends BaseModel {
   @column()
   declare role: 'CUSTOMER' | 'ADMIN' | 'WHOLESALE'
 
+  @column()
+  declare otp: string | null
+
+  @column.dateTime()
+  declare otpExpiresAt: DateTime | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

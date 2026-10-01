@@ -47,8 +47,10 @@ export interface AuthTokens {
 }
 
 export interface LoginResponse {
-  user: AuthUser
-  tokens: AuthTokens
+  user?: AuthUser
+  tokens?: AuthTokens
+  requiresOtp?: boolean
+  userId?: number
 }
 
 export interface RefreshTokenRequest {

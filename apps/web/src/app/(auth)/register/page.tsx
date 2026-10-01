@@ -26,7 +26,12 @@ export default function RegisterPage() {
 
   async function onSubmit(values: RegisterFormData) {
     try {
-      await register(values)
+      const result: any = await register(values)
+      if (result?.requiresOtp) {
+        toast.info('Please verify your email to complete registration.')
+        router.push(`/verify-otp?userId=${result.userId}`)
+        return
+      }
       toast.success('Account created! Welcome to Ankita Processors.')
       router.push('/')
     } catch (err: unknown) {

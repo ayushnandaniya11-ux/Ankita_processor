@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Separator } from '@ankita/ui'
 import { APP_NAME } from '@ankita/config'
-import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react'
+import { Instagram, Facebook, Twitter } from 'lucide-react'
 
 const FOOTER_LINKS = {
   Company: [
@@ -27,15 +27,17 @@ export function StorefrontFooter() {
       <div className="container-wide py-12">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="text-xl font-bold tracking-widest uppercase text-foreground">
-              {APP_NAME}
+          <div className="col-span-2 md:col-span-1 flex flex-col items-start">
+            <Link href="/" className="inline-block mb-2 group">
+              <span className="font-heading font-bold text-3xl tracking-tight transition-colors group-hover:text-primary">
+                {APP_NAME}
+              </span>
             </Link>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               Premium women&apos;s clothing crafted with care. Celebrating Indian craftsmanship and modern style.
             </p>
             <div className="mt-4 flex items-center gap-3">
-              <Link href="#" aria-label="Instagram" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="https://www.instagram.com/ankita_processors?stkn=MWdqbmI5YnRnY2hwZw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Instagram className="h-5 w-5" />
               </Link>
               <Link href="#" aria-label="Facebook" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -43,9 +45,6 @@ export function StorefrontFooter() {
               </Link>
               <Link href="#" aria-label="Twitter" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Twitter className="h-5 w-5" />
-              </Link>
-              <Link href="#" aria-label="YouTube" className="text-muted-foreground hover:text-foreground transition-colors">
-                <Youtube className="h-5 w-5" />
               </Link>
             </div>
           </div>

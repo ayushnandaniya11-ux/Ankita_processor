@@ -110,35 +110,40 @@ export default function InvoicePage() {
       </div>
 
       {/* A4 Size Paper Container */}
-      <div className="bg-white mx-auto shadow-lg print:shadow-none" style={{ width: '210mm', minHeight: '297mm' }}>
+      <div className="bg-white mx-auto shadow-lg print:shadow-none w-full max-w-full md:max-w-[210mm] print:w-[210mm] print:max-w-none overflow-hidden" style={{ minHeight: '297mm' }}>
         
         {/* Header */}
-        <div className="bg-[#9b0c51] text-white p-8 flex justify-between items-start">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Ankita Processors</h1>
-            <p className="text-sm">Plot 5, Near Vivekanand School, Jetpur,</p>
-            <p className="text-sm">Rajkot, Gujarat - 360370</p>
-            <p className="text-sm">Email: ankitaprocessor@gmail.com | Ph: +91 7043637284</p>
+        <div className="bg-[#9b0c51] text-white p-4 md:p-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8 text-center md:text-left">
+            <div className="bg-white p-1 rounded-xl shrink-0 w-24 h-24 md:w-28 md:h-28 flex items-center justify-center shadow-lg">
+              <img src="/logo.png" alt="Ankita Processors Logo" className="w-full h-full object-contain mix-blend-multiply" />
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3 tracking-tight">Ankita Processors</h1>
+              <p className="text-xs md:text-sm opacity-90">Plot 5, Near Vivekanand School, Jetpur,</p>
+              <p className="text-xs md:text-sm opacity-90">Rajkot, Gujarat - 360370</p>
+              <p className="text-xs md:text-sm opacity-90 mt-1">Email: ankitaprocessor@gmail.com | Ph: +91 7043637284</p>
+            </div>
           </div>
-          <div className="text-right">
-            <h2 className="text-3xl font-bold mb-2">TAX INVOICE</h2>
-            <p className="text-sm">GSTIN: {order.gstin}</p>
-            <p className="text-sm">PAN: {order.pan}</p>
+          <div className="text-center md:text-right mt-4 md:mt-0">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">TAX INVOICE</h2>
+            <p className="text-xs md:text-sm">GSTIN: {order.gstin}</p>
+            <p className="text-xs md:text-sm">PAN: {order.pan}</p>
           </div>
         </div>
 
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           {/* Info Section */}
-          <div className="flex justify-between mb-8 text-sm">
-            <table className="w-1/2">
+          <div className="flex flex-col md:flex-row justify-between mb-8 text-sm gap-4">
+            <table className="w-full md:w-1/2">
               <tbody>
-                <tr><td className="text-gray-500 py-1 w-32">Invoice No.</td><td className="font-bold">{order.invoice_no}</td></tr>
+                <tr><td className="text-gray-500 py-1 w-24 md:w-32">Invoice No.</td><td className="font-bold">{order.invoice_no}</td></tr>
                 <tr><td className="text-gray-500 py-1">Invoice Date</td><td className="font-bold">{order.invoice_date}</td></tr>
                 <tr><td className="text-gray-500 py-1">Order No.</td><td className="font-bold">{order.order_no}</td></tr>
                 <tr><td className="text-gray-500 py-1">Order Date</td><td className="font-bold">{order.order_date}</td></tr>
               </tbody>
             </table>
-            <table className="w-1/2">
+            <table className="w-full md:w-1/2">
               <tbody>
                 <tr><td className="text-gray-500 py-1 w-32">Place of Supply</td><td className="font-bold">{order.place_of_supply}</td></tr>
                 <tr><td className="text-gray-500 py-1">Supply Type</td><td className="font-bold">{order.supply_type}</td></tr>
@@ -149,7 +154,7 @@ export default function InvoicePage() {
           </div>
 
           {/* Addresses */}
-          <div className="flex gap-4 mb-8">
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="flex-1 bg-gray-50 p-4 rounded-md">
               <h3 className="text-xs font-bold text-[#8b1538] mb-2 uppercase">Bill To</h3>
               <p className="font-bold text-base mb-1">{order.billing_address.name}</p>
@@ -165,7 +170,8 @@ export default function InvoicePage() {
           </div>
 
           {/* Items Table */}
-          <table className="w-full mb-8 text-sm">
+          <div className="overflow-x-auto w-full mb-8">
+            <table className="w-full text-sm min-w-[700px]">
             <thead>
               <tr className="bg-[#9b0c51] text-white">
                 <th className="py-2 px-2 text-left w-8">#</th>
@@ -195,10 +201,11 @@ export default function InvoicePage() {
               ))}
             </tbody>
           </table>
+          </div>
 
           {/* Totals Section */}
-          <div className="flex justify-between items-start mb-16">
-            <div className="w-1/2 pr-8">
+          <div className="flex flex-col md:flex-row justify-between items-start mb-16 gap-8">
+            <div className="w-full md:w-1/2 md:pr-8">
               <div className="bg-gray-50 p-4 border-l-4 border-[#9b0c51] mb-8">
                 <p className="text-xs font-bold text-[#9b0c51] mb-1 uppercase">Amount in words</p>
                 <p className="font-bold">{order.amount_in_words}</p>
@@ -231,7 +238,7 @@ export default function InvoicePage() {
               </div>
             </div>
             
-            <div className="w-1/2">
+            <div className="w-full md:w-1/2">
               <table className="w-full">
                 <tbody>
                   <tr><td className="py-1 text-gray-600">Subtotal</td><td className="py-1 text-right font-bold">Rs. {order.subtotal.toFixed(2)}</td></tr>
@@ -251,8 +258,8 @@ export default function InvoicePage() {
           </div>
 
           {/* Footer Details */}
-          <div className="flex justify-between items-end border-t pt-4 border-gray-200 mt-16">
-            <div className="text-xs text-gray-600 w-2/3 pr-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-t pt-4 border-gray-200 mt-16 gap-8">
+            <div className="text-xs text-gray-600 w-full md:w-2/3 md:pr-8">
               <p className="font-bold text-black mb-1">Bank Details:</p>
               <p>Axis Bank, Kanakiya Plot, Jetpur</p>
               <p className="mb-4">A/c: <span className="font-bold text-black">924020025533052</span> | IFSC: <span className="font-bold text-black">UTIB0001468</span></p>
@@ -261,7 +268,7 @@ export default function InvoicePage() {
               <span className="ml-1">We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</span>
             </div>
             
-            <div className="text-right w-1/3">
+            <div className="text-left md:text-right w-full md:w-1/3">
               <p className="font-bold text-sm mb-12">For Ankita Processors</p>
               <p className="text-xs text-gray-600">Authorised Signatory</p>
             </div>

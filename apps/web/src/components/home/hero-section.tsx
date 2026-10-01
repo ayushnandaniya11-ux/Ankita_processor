@@ -1,62 +1,49 @@
 import Link from 'next/link'
 import { Button } from '@ankita/ui'
 import { ArrowRight } from 'lucide-react'
+import { StatsPanel } from './stats-panel'
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-stone-50">
-      <div className="container-wide flex min-h-[520px] flex-col items-center justify-center py-20 text-center md:min-h-[580px]">
-        {/* Label */}
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          New Season — 2026 Collection
-        </p>
+    <section className="relative overflow-hidden bg-background">
+      {/* Dynamic Animated Background Gradients */}
+      <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-[20%] -right-[10%] w-[70%] h-[70%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
+        <div className="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-accent/30 blur-[100px]" />
+      </div>
 
-        {/* Heading */}
-        <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl">
+      <div className="container-wide relative z-10 flex min-h-[600px] flex-col items-center justify-center py-24 text-center md:min-h-[700px]">
+
+
+        {/* Heading with Premium Font & Gradient Text */}
+        <h1 className="mx-auto max-w-4xl text-5xl font-bold leading-tight tracking-tight sm:text-6xl md:text-7xl lg:text-[5rem] animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           Elegance Woven
           <br />
-          <span className="italic font-light">into Every Thread</span>
+          <span className="italic font-light gradient-text">into Every Thread</span>
         </h1>
 
         {/* Description */}
-        <p className="mt-6 max-w-xl text-base text-muted-foreground md:text-lg">
+        <p className="mt-8 max-w-2xl text-lg text-muted-foreground md:text-xl font-light leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           Discover our curated collection of premium women&apos;s fashion — from handcrafted sarees to contemporary co-ord sets, celebrating the modern Indian woman.
         </p>
 
         {/* CTAs */}
-        <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
           <Link href="/new-arrivals">
-            <Button size="lg" className="group px-8">
+            <Button size="lg" className="group px-8 h-14 rounded-full text-base shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 hover:-translate-y-0.5">
               Shop New Arrivals
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1.5" />
             </Button>
           </Link>
           <Link href="/categories">
-            <Button size="lg" variant="outline" className="px-8">
+            <Button size="lg" variant="outline" className="px-8 h-14 rounded-full text-base bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/50 transition-all">
               Explore Categories
             </Button>
           </Link>
         </div>
 
-        {/* Stats */}
-        <div className="mt-14 flex items-center justify-center gap-8 divide-x divide-border">
-          {[
-            { value: '2,000+', label: 'Products' },
-            { value: '15,000+', label: 'Happy Customers' },
-            { value: '100%', label: 'Authentic' },
-          ].map((stat) => (
-            <div key={stat.label} className="px-8 text-center first:pl-0 last:pr-0">
-              <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Decorative elements */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-stone-200/50 blur-3xl" />
-        <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-stone-200/50 blur-2xl" />
+        {/* Stats Glass Panel */}
+        <StatsPanel />
       </div>
     </section>
   )

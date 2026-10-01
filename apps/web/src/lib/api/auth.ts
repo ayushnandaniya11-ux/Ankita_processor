@@ -13,6 +13,11 @@ export const authApi = {
     return data
   },
 
+  verifyOtp: async (payload: { userId: number, otp: string }): Promise<any> => {
+    const { data } = await apiClient.post('/auth/verify-otp', payload)
+    return data
+  },
+
   logout: async (): Promise<ApiResponse<null>> => {
     const { data } = await apiClient.post(API_ENDPOINTS.auth.logout)
     return data
