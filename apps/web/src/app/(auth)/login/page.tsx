@@ -1,127 +1,81 @@
-'use client'
-
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
-import { Eye, EyeOff } from 'lucide-react'
-import { useState } from 'react'
-import {
-  Button, Card, CardContent, CardDescription, CardHeader, CardTitle,
-  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
-  Input, Checkbox,
-} from '@ankita/ui'
-import { loginSchema, type LoginFormData } from '@ankita/validation'
-import { useAuth } from '@/hooks/use-auth'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button } from '@ankita/ui'
+import { Store, Building2, Briefcase } from 'lucide-react'
 
-export default function LoginPage() {
-  const router = useRouter()
-  const { login } = useAuth()
-  const [showPassword, setShowPassword] = useState(false)
-
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '', rememberMe: false },
-  })
-
-  async function onSubmit(values: LoginFormData) {
-    try {
-      await login(values)
-      toast.success('Welcome back!')
-      router.push('/')
-    } catch (err: unknown) {
-      const message = (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message || 'Invalid credentials'
-      toast.error(message)
-    }
-  }
-
+export default function AuthSelectionPage() {
   return (
-    <Card>
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Sign in</CardTitle>
-        <CardDescription>Enter your email and password to access your account</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input id="login-email" type="email" placeholder="you@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel>Password</FormLabel>
-                    <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        id="login-password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="••••••••"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="rememberMe"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-2 space-y-0">
-                  <FormControl>
-                    <Checkbox id="remember-me" checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                  <FormLabel htmlFor="remember-me" className="font-normal cursor-pointer">
-                    Remember me for 30 days
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-            <Button
-              id="login-submit"
-              type="submit"
-              className="w-full"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? 'Signing in...' : 'Sign in'}
-            </Button>
-          </form>
-        </Form>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{' '}
-          <Link href="/register" className="font-medium text-foreground hover:underline">
-            Create account
-          </Link>
+    <div className="container max-w-6xl py-12 px-4 mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold tracking-tight mb-4">Welcome to Ankita Processors</h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Please select your account type to proceed. We offer tailored experiences for retail customers, wholesale partners, and our internal team.
         </p>
-      </CardContent>
-    </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        {/* Customer */}
+        <Card className="flex flex-col h-full border-t-4 border-t-primary shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="text-center pb-2">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Store className="w-8 h-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl">Customer</CardTitle>
+            <CardDescription className="text-base mt-2">
+              Shop our collection and place orders online.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col justify-end mt-4 space-y-3">
+            <Link href="/login/customer" className="w-full">
+              <Button className="w-full text-base h-11" variant="default">Customer Login</Button>
+            </Link>
+            <Link href="/register/customer" className="w-full">
+              <Button className="w-full text-base h-11" variant="outline">Customer Registration</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Wholesaler */}
+        <Card className="flex flex-col h-full border-t-4 border-t-orange-500 shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="text-center pb-2">
+            <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Building2 className="w-8 h-8 text-orange-500" />
+            </div>
+            <CardTitle className="text-2xl">Wholesaler</CardTitle>
+            <CardDescription className="text-base mt-2">
+              Explore wholesale catalogs and submit bulk purchase inquiries.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col justify-end mt-4 space-y-3">
+            <Link href="/login/wholesaler" className="w-full">
+              <Button className="w-full text-base h-11 bg-orange-500 hover:bg-orange-600">Wholesaler Login</Button>
+            </Link>
+            <Link href="/register/wholesaler" className="w-full">
+              <Button className="w-full text-base h-11 border-orange-500 text-orange-600 hover:bg-orange-50" variant="outline">Wholesaler Registration</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Employee */}
+        <Card className="flex flex-col h-full border-t-4 border-t-slate-700 shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="text-center pb-2">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Briefcase className="w-8 h-8 text-slate-700" />
+            </div>
+            <CardTitle className="text-2xl">Employee</CardTitle>
+            <CardDescription className="text-base mt-2">
+              Access your assigned work, tasks, and employee dashboard.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col justify-end mt-4 space-y-3">
+            <Link href="/employee/login" className="w-full">
+              <Button className="w-full text-base h-11 bg-slate-800 hover:bg-slate-900">Employee Login</Button>
+            </Link>
+            <div className="text-center text-xs text-muted-foreground pt-2">
+              * Employee registration is via invitation only.
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   )
 }

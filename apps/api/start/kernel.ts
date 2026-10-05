@@ -36,6 +36,7 @@ router.use([
   () => import('@adonisjs/core/bodyparser_middleware'),
   () => import('@adonisjs/session/session_middleware'),
   () => import('@adonisjs/auth/initialize_auth_middleware'),
+  () => import('@adonisjs/shield/shield_middleware'),
 ])
 
 /**
@@ -44,4 +45,5 @@ router.use([
  */
 export const middleware = router.named({
   auth: () => import('#middleware/auth_middleware'),
+  rbac: () => import('#middleware/rbac_middleware'),
 })

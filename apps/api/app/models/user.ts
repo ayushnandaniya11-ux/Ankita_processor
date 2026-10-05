@@ -19,7 +19,7 @@ export default class User extends BaseModel {
   declare phone: string | null
 
   @column()
-  declare role: 'CUSTOMER' | 'ADMIN' | 'WHOLESALE'
+  declare role: 'CUSTOMER' | 'ADMIN' | 'WHOLESALE' | 'SUPER_ADMIN' | 'EMPLOYEE'
 
   @column()
   declare otp: string | null

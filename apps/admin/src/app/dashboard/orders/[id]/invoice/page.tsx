@@ -115,8 +115,8 @@ export default function InvoicePage() {
         {/* Header */}
         <div className="bg-[#9b0c51] text-white p-4 md:p-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8 text-center md:text-left">
-            <div className="bg-white p-1 rounded-xl shrink-0 w-24 h-24 md:w-28 md:h-28 flex items-center justify-center shadow-lg">
-              <img src="/logo.png" alt="Ankita Processors Logo" className="w-full h-full object-contain mix-blend-multiply" />
+            <div className="bg-white p-1 rounded-xl shrink-0 w-24 h-24 md:w-28 md:h-28 flex items-center justify-center shadow-lg border-2 border-[#9b0c51]">
+              <span className="text-[#9b0c51] font-heading font-bold text-5xl">AP</span>
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3 tracking-tight">Ankita Processors</h1>

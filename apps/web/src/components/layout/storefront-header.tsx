@@ -49,7 +49,6 @@ export function StorefrontHeader() {
     <>
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors">
         <div className="container-wide flex h-16 items-center justify-between">
-          {/* Logo */}
           <Link href="/" className="flex items-center group">
             <span className="font-heading font-bold text-2xl tracking-tight transition-colors group-hover:text-primary">
               {APP_NAME}
@@ -129,16 +128,15 @@ export function StorefrontHeader() {
                     <Link href="/orders" className="cursor-pointer w-full">Orders</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <button 
-                      className="cursor-pointer text-red-600 focus:text-red-600 w-full text-left flex items-center px-2 py-1.5 text-sm outline-none" 
-                      onClick={async () => {
-                        await logout()
-                        window.location.href = '/'
-                      }}
-                    >
-                      Log out
-                    </button>
+                  <DropdownMenuItem 
+                    className="cursor-pointer text-red-600 focus:text-red-600 w-full text-left flex items-center px-2 py-1.5 text-sm outline-none" 
+                    onSelect={async (e) => {
+                      e.preventDefault()
+                      await logout()
+                      window.location.href = '/'
+                    }}
+                  >
+                    Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

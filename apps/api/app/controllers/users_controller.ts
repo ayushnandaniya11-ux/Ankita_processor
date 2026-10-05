@@ -19,7 +19,7 @@ export default class UsersController {
       email: vine.string().email().normalizeEmail(),
       password: vine.string().minLength(6),
       phone: vine.string().trim().optional(),
-      role: vine.enum(['CUSTOMER', 'ADMIN', 'WHOLESALE']).optional(),
+      role: vine.enum(['CUSTOMER', 'ADMIN', 'WHOLESALE', 'SUPER_ADMIN', 'EMPLOYEE']).optional(),
     })
     const payload = await request.validateUsing(vine.compile(schema))
 
@@ -35,7 +35,7 @@ export default class UsersController {
       email: vine.string().email().normalizeEmail().optional(),
       password: vine.string().minLength(6).optional(),
       phone: vine.string().trim().optional(),
-      role: vine.enum(['CUSTOMER', 'ADMIN', 'WHOLESALE']).optional(),
+      role: vine.enum(['CUSTOMER', 'ADMIN', 'WHOLESALE', 'SUPER_ADMIN', 'EMPLOYEE']).optional(),
     })
     const payload = await request.validateUsing(vine.compile(schema))
 

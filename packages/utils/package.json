@@ -15,6 +15,7 @@
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "@ankita/tsconfig": "workspace:*"
   }
 }

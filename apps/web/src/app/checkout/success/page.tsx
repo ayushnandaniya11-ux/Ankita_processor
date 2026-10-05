@@ -18,8 +18,8 @@ export default function CheckoutSuccessPage({ searchParams }: Props) {
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
         
         <div className="flex flex-col items-center justify-center mb-8 gap-6 relative">
-          <div className="relative w-32 h-32 flex items-center justify-center rounded-full bg-white border border-primary/20 shadow-xl z-20 p-4">
-             <img src="/logo.png" alt="Ankita Processors" className="w-full h-full object-contain mix-blend-multiply" />
+          <div className="relative w-32 h-32 flex items-center justify-center rounded-full bg-white border border-primary/20 shadow-xl z-20 p-4 text-primary font-heading font-bold text-6xl tracking-tight">
+             AP
           </div>
           
           <div className="absolute top-0 right-1/2 translate-x-12 -translate-y-4 z-30">

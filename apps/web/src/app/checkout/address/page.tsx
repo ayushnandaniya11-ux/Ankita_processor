@@ -44,7 +44,9 @@ export default function CheckoutAddressPage() {
               </div>
               <div className="flex justify-between font-semibold text-foreground pt-2 border-t"><span>Total</span><span>₹0</span></div>
             </div>
-            <Button className="w-full" disabled>Continue to Payment</Button>
+            <Button className="w-full" asChild>
+              <Link href="/checkout/payment">Continue to Payment</Link>
+            </Button>
           </div>
         </div>
       </div>

@@ -71,8 +71,21 @@ export function useCart() {
     return result
   }, [mutate])
 
+  const clearCart = useCallback(async () => {
+    setLoading(true)
+    try {
+      const result = await cartApi.clear()
+      await mutate()
+      return result
+    } finally {
+      setLoading(false)
+    }
+  }, [mutate])
+
   return {
     cart: data,
+    items: data?.items || [],
+    totalAmount: data?.grandTotal || 0,
     itemCount: data?.itemCount ?? 0,
     isLoading,
     loading,
@@ -81,6 +94,7 @@ export function useCart() {
     removeItem,
     applyCoupon,
     removeCoupon,
+    clearCart,
     mutate,
   }
 }

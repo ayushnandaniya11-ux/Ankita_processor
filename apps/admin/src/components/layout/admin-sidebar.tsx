@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Tag, BarChart3,
   Settings, Store, RotateCcw, Star, Truck, LogOut, Building2, ChevronDown,
-  Menu, X,
+  Menu, X, Shield, UserPlus, Users2, Clock, Activity, FileText, CheckSquare
 } from 'lucide-react'
 import { cn } from '@ankita/utils'
 import { Button, Avatar, AvatarFallback, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, ThemeToggle } from '@ankita/ui'
@@ -45,6 +45,18 @@ const NAV_GROUPS = [
     ],
   },
   {
+    label: 'Team',
+    items: [
+      { href: '/dashboard/employees', icon: Users2, label: 'All Employees' },
+      { href: '/dashboard/employees/new', icon: UserPlus, label: 'Add New Employee' },
+      { href: '/dashboard/roles', icon: Shield, label: 'Roles & Permissions' },
+      { href: '/dashboard/approvals', icon: CheckSquare, label: 'Approvals' },
+      { href: '/dashboard/attendance', icon: Clock, label: 'Attendance' },
+      { href: '/dashboard/activity-logs', icon: Activity, label: 'Activity Logs' },
+      { href: '/dashboard/performance', icon: FileText, label: 'Performance Reports' },
+    ],
+  },
+  {
     label: 'System',
     items: [
       { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
@@ -65,7 +77,6 @@ export function AdminSidebar({ mobile, onClose }: AdminSidebarProps) {
       'flex h-full w-60 flex-col border-r bg-[hsl(var(--sidebar-bg))] transition-colors',
       mobile && 'fixed inset-y-0 left-0 z-50 shadow-xl'
     )}>
-      {/* Logo */}
       <div className="flex h-16 items-center justify-between border-b px-4">
         <Link href="/dashboard" onClick={onClose} className="text-sm font-bold tracking-widest uppercase">
           {APP_NAME}
@@ -154,10 +165,10 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
       <div className="flex items-center gap-2">
         <ThemeToggle />
         <Button variant="outline" size="sm" asChild>
-          <Link href="/" target="_blank" rel="noopener noreferrer">
+          <a href={process.env.NEXT_PUBLIC_STOREFRONT_URL || "http://localhost:3000/products"} target="_blank" rel="noopener noreferrer">
             <Store className="mr-2 h-3.5 w-3.5" />
             View Store
-          </Link>
+          </a>
         </Button>
       </div>
     </header>

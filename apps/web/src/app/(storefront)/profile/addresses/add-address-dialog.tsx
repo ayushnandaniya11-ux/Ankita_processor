@@ -33,7 +33,7 @@ export function AddAddressDialog() {
         <DialogHeader>
           <DialogTitle>Add New Address</DialogTitle>
           <DialogDescription>
-            Enter your address details here. Click save when you're done.
+            Enter your address details here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>

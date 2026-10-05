@@ -30,7 +30,7 @@ export const DEFAULT_SHIPPING_COST = 79
 export const COD_EXTRA_CHARGE = 49
 
 export const DEFAULT_RETURN_WINDOW = 7 // days
-export const DEFAULT_EXCHANGE_WINDOW = 15 // days
+export const DEFAULT_EXCHANGE_WINDOW = 7 // days
 
 export const GST_RATES = [0, 5, 12, 18, 28] as const
 export const DEFAULT_GST_RATE = 5

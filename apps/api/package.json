@@ -55,12 +55,16 @@
     "@adonisjs/auth": "^9.4.0",
     "@adonisjs/core": "^6.18.0",
     "@adonisjs/cors": "^2.2.1",
+    "@adonisjs/limiter": "^2.4.0",
     "@adonisjs/lucid": "^21.6.1",
     "@adonisjs/session": "^7.7.1",
+    "@adonisjs/shield": "^8.2.0",
     "@vinejs/vine": "^3.0.1",
+    "argon2": "^0.45.1",
     "luxon": "^3.7.2",
     "nodemailer": "^10.0.13",
     "pg": "^8.23.0",
+    "razorpay": "^2.9.8",
     "reflect-metadata": "^0.2.2"
   },
   "hotHook": {

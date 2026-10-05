@@ -31,7 +31,9 @@ export default class AuthMiddleware {
       return next()
     } catch (error) {
       ctx.response.clearCookie('authToken', { path: '/', sameSite: 'lax' })
-      return ctx.response.unauthorized({ error: { message: 'Unauthorized, invalid or expired token' } })
+      return ctx.response.unauthorized({
+        error: { message: 'Unauthorized, invalid or expired token' },
+      })
     }
   }
 }

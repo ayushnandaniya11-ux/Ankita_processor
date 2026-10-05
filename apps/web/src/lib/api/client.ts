@@ -23,8 +23,12 @@ apiClient.interceptors.response.use(
     const status = error?.response?.status
 
     if (status === 401) {
+      const isMeEndpoint = error.config?.url?.includes('/auth/me')
+      
       // Token expired/invalid — clear UI state and redirect to login
-      if (typeof window !== 'undefined') {
+      // We skip redirecting for the /auth/me endpoint because it's used to check auth status,
+      // and guest users or users with expired sessions should not be forcefully redirected.
+      if (!isMeEndpoint && typeof window !== 'undefined') {
         const isAuthPage = window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register')
         if (!isAuthPage) {
           window.location.href = '/login?session=expired'

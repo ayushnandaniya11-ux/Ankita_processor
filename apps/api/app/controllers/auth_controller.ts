@@ -110,7 +110,15 @@ export default class AuthController {
 
     const user = await User.verifyCredentials(email, password)
 
-    const expiresIn = rememberMe ? '30 days' : '2 hours'
+    if (user.role === 'WHOLESALE') {
+      return response.forbidden({ error: { message: 'Wholesale accounts must log in through the Wholesale portal.' } })
+    }
+    
+    if (user.role === 'EMPLOYEE' || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+      return response.forbidden({ error: { message: 'Employee accounts must log in through the Employee portal.' } })
+    }
+
+    const expiresIn = rememberMe ? '30 days' : undefined
     const token = encryption.encrypt({ userId: user.id }, expiresIn)
 
     response.cookie('authToken', token, {
@@ -132,7 +140,7 @@ export default class AuthController {
     })
   }
 
-  async verifyOtp({ request, response, auth }: HttpContext) {
+  async verifyOtp({ request, response }: HttpContext) {
     const schema = vine.object({
       userId: vine.number(),
       otp: vine.string().fixedLength(6),
@@ -152,7 +160,7 @@ export default class AuthController {
     user.otpExpiresAt = null
     await user.save()
 
-    const token = encryption.encrypt({ userId: user.id }, '2 hours')
+    const token = encryption.encrypt({ userId: user.id })
     response.cookie('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -174,7 +182,12 @@ export default class AuthController {
 
   async logout(ctx: HttpContext) {
     const { response } = ctx
-    response.clearCookie('authToken', { path: '/', sameSite: 'lax' })
+    response.clearCookie('authToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    })
     return response.ok({ message: 'Logged out successfully' })
   }
 
