@@ -40,7 +40,8 @@ function VerifyOtpForm() {
   }
 
   return (
-    <Card>
+    <div className="w-full max-w-md mx-auto">
+      <Card>
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl">Verify your Email</CardTitle>
         <CardDescription>We sent a 6-digit verification code to your email. Please enter it below.</CardDescription>
@@ -67,6 +68,7 @@ function VerifyOtpForm() {
         </form>
       </CardContent>
     </Card>
+    </div>
   )
 }
 

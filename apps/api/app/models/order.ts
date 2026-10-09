@@ -61,6 +61,27 @@ export default class Order extends BaseModel {
   @column()
   declare razorpaySignature: string | null
 
+  @column()
+  declare awbNumber: string | null
+
+  @column()
+  declare courier: string | null
+
+  @column()
+  declare trackingUrl: string | null
+
+  @column.dateTime()
+  declare pickupDate: DateTime | null
+
+  @column.dateTime()
+  declare deliveredDate: DateTime | null
+
+  @column({
+    prepare: (value: any) => JSON.stringify(value),
+    consume: (value: string) => JSON.parse(value || '[]'),
+  })
+  declare statusHistory: any[]
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

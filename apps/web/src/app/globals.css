@@ -4,50 +4,67 @@
 
 @layer base {
   :root {
-    /* Light theme — modern monochrome & indigo */
+    /* Light Theme - Ultra Premium Clean Slate & Sapphire */
     --background: 0 0% 100%;
-    --foreground: 240 10% 10%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 10%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 10%;
-    --primary: 250 85% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 10% 10%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 5% 45%;
-    --accent: 250 80% 96%;
-    --accent-foreground: 250 85% 50%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 250 85% 60%;
-    --radius: 0.75rem;
+    --popover-foreground: 222 47% 11%;
+
+    /* Vibrant Sapphire Primary */
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+
+    /* Soft Slate Secondary */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11.2%;
+
+    /* Muted Text */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Soft Blue Accent */
+    --accent: 214 32% 91%;
+    --accent-foreground: 222 47% 11.2%;
+
+    /* Elegant Destructive Red */
+    --destructive: 348 83% 47%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+    --radius: 1rem;
   }
 
   .dark {
-    /* Dark theme — deep zinc & indigo */
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 7%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 7%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 250 85% 65%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 8% 12%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 8% 12%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 250 50% 15%;
-    --accent-foreground: 250 85% 85%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 8% 16%;
-    --input: 240 8% 16%;
-    --ring: 250 85% 65%;
+    /* Dark Theme - Deep Space & Vivid Sapphire */
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+    --card: 223 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 223 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 348 83% 55%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
   }
 
   * {
@@ -59,34 +76,61 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased min-h-screen overflow-x-hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    background-image: radial-gradient(circle at top right, hsla(var(--primary) / 0.05), transparent 400px),
+      radial-gradient(circle at bottom left, hsla(var(--primary) / 0.03), transparent 300px);
+    background-attachment: fixed;
+    transition: background-color 0.5s ease, color 0.5s ease;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading tracking-tight text-foreground;
   }
 }
 
 @layer components {
+
+  /* Premium Wide Container */
   .container-wide {
-    @apply mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-12;
   }
 
+  /* Standard Vertical Spacing */
   .section-py {
     @apply py-16 md:py-24 lg:py-32;
   }
 
+  /* Stunning Product Card Hover */
   .product-card-hover {
-    @apply transition-all duration-500 ease-out hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/5;
+    @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] dark:hover:shadow-primary/10;
   }
 
+  /* Modern Glassmorphism */
   .glass-panel {
-    @apply bg-white/60 dark:bg-black/60 backdrop-blur-lg border border-white/20 dark:border-white/10 shadow-lg;
+    @apply bg-white/70 dark:bg-black/50 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-primary/5 transition-all duration-300;
   }
-  
+
+  /* Ultra Sleek Dynamic Gradient Text */
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent-foreground to-primary bg-[length:200%_auto] animate-gradient-x;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-indigo-500 to-primary bg-[length:200%_auto] animate-gradient-x;
+  }
+
+  /* Smooth Button Hover Effects */
+  .btn-premium {
+    @apply relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 active:scale-95;
+  }
+
+  .btn-premium::after {
+    @apply content-[''] absolute inset-0 bg-white/20 translate-y-full transition-transform duration-300 ease-in-out rounded-[inherit];
+  }
+
+  .btn-premium:hover::after {
+    @apply translate-y-0;
   }
 }

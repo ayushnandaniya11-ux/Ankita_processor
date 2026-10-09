@@ -9,7 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
-import { authThrottle } from '#start/limiter'
+import { authThrottle, throttle } from '#start/limiter'
 
 router.get('/', async () => {
   return {
@@ -143,6 +143,20 @@ router
           .prefix('wholesale')
           .use([middleware.auth(), middleware.rbac([])])
 
+        // Admin Orders Management
+        router
+          .group(() => {
+            router.get('orders', '#controllers/admin_orders_controller.index')
+            router.get('orders/:id', '#controllers/admin_orders_controller.show')
+            router.post('orders/:id/accept', '#controllers/admin_orders_controller.accept')
+            router.post('orders/:id/reject', '#controllers/admin_orders_controller.reject')
+            router.post('orders/:id/invoice', '#controllers/admin_orders_controller.generateInvoice')
+            router.post('orders/:id/waybill', '#controllers/admin_orders_controller.generateWaybill')
+            router.get('shipping', '#controllers/admin_orders_controller.getShipping')
+            router.post('logistics/webhook', '#controllers/admin_orders_controller.logisticsWebhook')
+          })
+          .use([middleware.auth(), middleware.rbac([])])
+
         // Admin Approval Workflow Routes
         router
           .get('approval-requests', () =>
@@ -176,3 +190,4 @@ router
       .prefix('admin') // Protected by admin middleware
   })
   .prefix('api/v1')
+  .use(throttle)

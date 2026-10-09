@@ -37,7 +37,7 @@ export default function WholesalerLoginPage() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-md mx-auto">
       <div className="mb-4">
         <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
           <ArrowLeft className="w-4 h-4" /> Back to Account Selection
@@ -126,7 +126,7 @@ export default function WholesalerLoginPage() {
           </Form>
           <div className="mt-4 text-center space-y-2">
             <p className="text-sm text-muted-foreground">
-              Don't have a wholesale account?{' '}
+              Don&apos;t have a wholesale account?{' '}
               <Link href="/register/wholesaler" className="font-medium text-orange-600 hover:underline">
                 Apply now
               </Link>

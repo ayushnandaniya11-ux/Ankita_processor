@@ -1,84 +1,136 @@
 'use client'
 
 import { useState } from 'react'
+import useSWR from 'swr'
+import { api, fetcher } from '@/lib/api'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, Badge, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Checkbox } from '@ankita/ui'
-import { Eye, Download, MoreHorizontal, CheckCircle, FileText, Truck, XCircle } from 'lucide-react'
+import { Eye, Download, MoreHorizontal, CheckCircle, FileText, Truck, XCircle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-
-const INITIAL_ORDERS = [
-  { id: 'ORD-7393', customer: 'Riya Gupta', date: '2026-09-25', status: 'Pending', total: 5400.00, items: 2 },
-  { id: 'ORD-7394', customer: 'Anita Singh', date: '2026-09-25', status: 'Pending', total: 2100.00, items: 1 },
-] as any[]
+import { format } from 'date-fns'
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState(INITIAL_ORDERS)
+  const { data, error, mutate, isLoading } = useSWR('/admin/orders', fetcher)
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
+  const [isProcessing, setIsProcessing] = useState(false)
 
+  const orders = data?.orders || []
 
-
-  const handleAcceptOrder = (orderId: string) => {
-    setOrders(orders.map(o => o.id === orderId ? { ...o, status: 'Processing' } : o))
-    toast.success('Order Accepted!', {
-      description: 'Invoice and Waybill opened in new tabs.'
-    })
-    
-    setTimeout(() => {
-      window.open(`/dashboard/orders/${orderId}/invoice`, '_blank')
-      window.open(`/dashboard/orders/${orderId}/waybill`, '_blank')
-    }, 100)
-  }
-
-  const handleCancelOrder = (orderId: string) => {
-    setOrders(orders.map(o => o.id === orderId ? { ...o, status: 'Cancelled' } : o))
-    toast.info('Order Cancelled')
-  }
-
-  const downloadInvoice = (order: any) => {
-    window.open(`/dashboard/orders/${order.id}/invoice`, '_blank')
-  }
-  const downloadWaybill = (order: any) => {
-    window.open(`/dashboard/orders/${order.id}/waybill`, '_blank')
-  }
-
-  const handleBulkAccept = () => {
-    setOrders(orders.map(o => selectedOrders.includes(o.id) && o.status === 'Pending' ? { ...o, status: 'Processing' } : o))
-    toast.success(`${selectedOrders.length} Orders Accepted!`)
-    
-    setTimeout(() => {
-      selectedOrders.forEach(id => {
-        window.open(`/dashboard/orders/${id}/invoice`, '_blank')
-        window.open(`/dashboard/orders/${id}/waybill`, '_blank')
+  const handleAcceptOrder = async (orderId: string) => {
+    if (!window.confirm('Are you sure you want to accept this order?')) return;
+    try {
+      setIsProcessing(true)
+      await api.post(`/admin/orders/${orderId}/accept`)
+      toast.success('Order Accepted!', {
+        description: 'Order status updated to Ready to Ship.'
       })
-    }, 100)
-    
-    setSelectedOrders([])
+      mutate()
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to accept order')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
-  const handleBulkInvoice = () => {
-    selectedOrders.forEach(id => {
-      const order = orders.find(o => o.id === id)
-      if (order && order.status !== 'Pending' && order.status !== 'Cancelled') {
-        window.open(`/dashboard/orders/${order.id}/invoice`, '_blank')
-      }
-    })
-    toast.success(`Opening invoices for ${selectedOrders.length} orders`)
-    setSelectedOrders([])
+  const handleCancelOrder = async (orderId: string) => {
+    if (!window.confirm('Are you sure you want to reject this order?')) return;
+    try {
+      setIsProcessing(true)
+      await api.post(`/admin/orders/${orderId}/reject`)
+      toast.success('Order Cancelled')
+      mutate()
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to cancel order')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
-  const handleBulkWaybill = () => {
-    selectedOrders.forEach(id => {
-      const order = orders.find(o => o.id === id)
-      if (order && order.status !== 'Pending' && order.status !== 'Cancelled') {
-        window.open(`/dashboard/orders/${order.id}/waybill`, '_blank')
+  const handleGenerateInvoice = async (orderId: string) => {
+    try {
+      setIsProcessing(true)
+      await api.post(`/admin/orders/${orderId}/invoice`)
+      toast.success('Invoice Generated successfully')
+      mutate()
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to generate invoice')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleGenerateWaybill = async (orderId: string) => {
+    try {
+      setIsProcessing(true)
+      await api.post(`/admin/orders/${orderId}/waybill`)
+      toast.success('Waybill Generated successfully')
+      mutate()
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to generate waybill')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleBulkAccept = async () => {
+    setIsProcessing(true)
+    try {
+      for (const id of selectedOrders) {
+        const order = orders.find((o: any) => o.id === id)
+        if (order && order.status === 'PENDING') {
+          await api.post(`/admin/orders/${id}/accept`)
+        }
       }
-    })
-    toast.success(`Waybills generated for ${selectedOrders.length} orders`)
-    setSelectedOrders([])
+      toast.success(`${selectedOrders.length} Orders Accepted!`)
+      setSelectedOrders([])
+      mutate()
+    } catch (err) {
+      toast.error('Error accepting some orders')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleBulkInvoice = async () => {
+    setIsProcessing(true)
+    try {
+      for (const id of selectedOrders) {
+        const order = orders.find((o: any) => o.id === id)
+        if (order && order.status !== 'PENDING' && order.status !== 'CANCELLED') {
+          await api.post(`/admin/orders/${id}/invoice`)
+        }
+      }
+      toast.success(`Invoices generated for selected orders`)
+      setSelectedOrders([])
+      mutate()
+    } catch (err) {
+      toast.error('Error generating some invoices')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleBulkWaybill = async () => {
+    setIsProcessing(true)
+    try {
+      for (const id of selectedOrders) {
+        const order = orders.find((o: any) => o.id === id)
+        if (order && order.status === 'READY_TO_SHIP') {
+          await api.post(`/admin/orders/${id}/waybill`)
+        }
+      }
+      toast.success(`Waybills generated for selected orders`)
+      setSelectedOrders([])
+      mutate()
+    } catch (err) {
+      toast.error('Error generating some waybills')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   const toggleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedOrders(orders.map(o => o.id))
+      setSelectedOrders(orders.map((o: any) => o.id))
     } else {
       setSelectedOrders([])
     }
@@ -103,9 +155,9 @@ export default function OrdersPage() {
           {selectedOrders.length > 0 && (
             <div className="flex items-center gap-2 mr-2 bg-muted px-3 py-1.5 rounded-md border">
               <span className="text-sm font-medium mr-2">{selectedOrders.length} selected</span>
-              <Button size="sm" variant="secondary" onClick={handleBulkAccept}>Accept Orders</Button>
-              <Button size="sm" variant="secondary" onClick={handleBulkInvoice}>Invoices</Button>
-              <Button size="sm" variant="secondary" onClick={handleBulkWaybill}>Waybills</Button>
+              <Button size="sm" variant="secondary" onClick={handleBulkAccept} disabled={isProcessing}>Accept Orders</Button>
+              <Button size="sm" variant="secondary" onClick={handleBulkInvoice} disabled={isProcessing}>Invoices</Button>
+              <Button size="sm" variant="secondary" onClick={handleBulkWaybill} disabled={isProcessing}>Waybills</Button>
             </div>
           )}
           <Button variant="outline">
@@ -125,17 +177,28 @@ export default function OrdersPage() {
                   aria-label="Select all" 
                 />
               </TableHead>
-              <TableHead>Order ID</TableHead>
+              <TableHead>Order No</TableHead>
               <TableHead>Customer</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead>Items</TableHead>
               <TableHead>Total (₹)</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.map((order) => (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center">
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                </TableCell>
+              </TableRow>
+            ) : orders.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                  No pending orders found.
+                </TableCell>
+              </TableRow>
+            ) : orders.map((order: any) => (
               <TableRow key={order.id}>
                 <TableCell>
                   <Checkbox 
@@ -144,24 +207,23 @@ export default function OrdersPage() {
                     aria-label={`Select ${order.id}`}
                   />
                 </TableCell>
-                <TableCell className="font-mono font-medium">{order.id}</TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>{order.items}</TableCell>
-                <TableCell>₹{order.total.toFixed(2)}</TableCell>
+                <TableCell className="font-mono font-medium">{order.orderNo}</TableCell>
+                <TableCell>{order.user?.firstName} {order.user?.lastName}</TableCell>
+                <TableCell>{order.createdAt ? format(new Date(order.createdAt), 'MMM dd, yyyy') : '-'}</TableCell>
+                <TableCell>₹{parseFloat(order.totalAmount).toFixed(2)}</TableCell>
                 <TableCell>
                   <Badge variant={
-                    order.status === 'Delivered' ? 'default' : 
-                    order.status === 'Cancelled' ? 'destructive' : 
-                    order.status === 'Processing' ? 'secondary' : 'outline'
+                    order.status === 'DELIVERED' ? 'default' : 
+                    order.status === 'CANCELLED' ? 'destructive' : 
+                    ['READY_TO_SHIP', 'SHIPPED'].includes(order.status) ? 'secondary' : 'outline'
                   }>
-                    {order.status}
+                    {order.status.replace('_', ' ')}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" disabled={isProcessing}>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -172,7 +234,7 @@ export default function OrdersPage() {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       
-                      {order.status === 'Pending' && (
+                      {order.status === 'PENDING' && (
                         <>
                           <DropdownMenuItem onClick={() => handleAcceptOrder(order.id)}>
                             <CheckCircle className="mr-2 h-4 w-4 text-green-600" /> Accept Order
@@ -183,14 +245,29 @@ export default function OrdersPage() {
                         </>
                       )}
                       
-                      {order.status !== 'Pending' && order.status !== 'Cancelled' && (
+                      {order.status !== 'PENDING' && order.status !== 'CANCELLED' && (
                         <>
-                          <DropdownMenuItem onClick={() => downloadInvoice(order)}>
-                            <FileText className="mr-2 h-4 w-4" /> Download Invoice
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => downloadWaybill(order)}>
-                            <Truck className="mr-2 h-4 w-4" /> Download Waybill
-                          </DropdownMenuItem>
+                          {!order.invoiceNo && (
+                            <DropdownMenuItem onClick={() => handleGenerateInvoice(order.id)}>
+                              <FileText className="mr-2 h-4 w-4" /> Generate Invoice
+                            </DropdownMenuItem>
+                          )}
+                          {order.invoiceNo && (
+                            <DropdownMenuItem onClick={() => window.open(`/dashboard/orders/${order.id}/invoice`, '_blank')}>
+                              <FileText className="mr-2 h-4 w-4" /> View Invoice
+                            </DropdownMenuItem>
+                          )}
+                          
+                          {order.status === 'READY_TO_SHIP' && !order.awbNumber && (
+                            <DropdownMenuItem onClick={() => handleGenerateWaybill(order.id)}>
+                              <Truck className="mr-2 h-4 w-4" /> Generate Waybill
+                            </DropdownMenuItem>
+                          )}
+                          {order.awbNumber && (
+                            <DropdownMenuItem onClick={() => window.open(`/dashboard/orders/${order.id}/waybill`, '_blank')}>
+                              <Truck className="mr-2 h-4 w-4" /> View Waybill
+                            </DropdownMenuItem>
+                          )}
                         </>
                       )}
                     </DropdownMenuContent>

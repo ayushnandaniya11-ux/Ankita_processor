@@ -28,7 +28,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <Card>
+    <div className="w-full max-w-md mx-auto">
+      <Card>
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl">Forgot Password</CardTitle>
         <CardDescription>Enter your email and we&apos;ll send you a reset link</CardDescription>
@@ -54,5 +55,6 @@ export default function ForgotPasswordPage() {
         </p>
       </CardContent>
     </Card>
+    </div>
   )
 }

@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           Ankita Processors
         </a>
       </div>
-      <div className="w-full max-w-md">
+      <div className="w-full">
         {children}
       </div>
     </div>

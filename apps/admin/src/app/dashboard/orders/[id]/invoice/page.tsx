@@ -2,100 +2,46 @@
 
 import React from 'react'
 import { useParams } from 'next/navigation'
+import useSWR from 'swr'
+import { fetcher } from '@/lib/api'
 import { Button } from '@ankita/ui'
-import { Printer } from 'lucide-react'
-
-// Dummy data mirroring what would come from the database
-const MOCK_ORDER_DATA = {
-  order_no: 'AP/ORD/2026-27/000001',
-  order_date: '26 Jul 2026',
-  invoice_no: 'AP/INV/2026-27/000001',
-  invoice_date: '26 Jul 2026',
-  place_of_supply: '24 - Gujarat',
-  supply_type: 'Intra-State',
-  payment: 'UPI — PENDING',
-  reverse_charge: 'No',
-  billing_address: {
-    name: 'Priya Sharma',
-    address: '12 Shanti Residency, Satellite Road, Ahmedabad, Gujarat 380015, India',
-    phone: ''
-  },
-  shipping_address: {
-    name: 'Priya Sharma',
-    address: '12 Shanti Residency, Satellite Road, Ahmedabad, Gujarat 380015, India',
-    phone: '+919825012345'
-  },
-  items: [
-    { id: 1, description: 'Banarasi Brocade Dupatta — Antique Gold', hsn: '6214', qty: 2, rate: 2799.00, taxable: 5106.82, gstPercent: 5, taxAmount: 255.34, total: 5362.16 },
-    { id: 2, description: 'Bandhani Silk Saree with Mirror Work', hsn: '5007', qty: 1, rate: 5799.00, taxable: 5290.18, gstPercent: 5, taxAmount: 264.51, total: 5554.69 },
-  ],
-  subtotal: 11397.00,
-  discount: 1000.00,
-  taxable_value: 10397.00,
-  cgst: 259.92,
-  sgst: 259.93,
-  shipping: 0,
-  round_off: 0.15,
-  grand_total: 10917.00,
-  amount_in_words: 'Ten Thousand Nine Hundred Seventeen Rupees Only',
-  gstin: '24ANCPN9292N2ZB',
-  pan: 'ANCPN9292N',
-}
-
-function getOrderData(id: string) {
-  const base = {
-    ...MOCK_ORDER_DATA,
-    order_no: id,
-    invoice_no: id.replace('ORD', 'INV'),
-  }
-
-  if (id === 'ORD-7394') {
-    return {
-      ...base,
-      billing_address: { ...base.billing_address, name: 'Anita Singh' },
-      shipping_address: { ...base.shipping_address, name: 'Anita Singh' },
-      items: [
-        { id: 1, description: 'Cotton Printed Kurti', hsn: '6214', qty: 1, rate: 2000.00, taxable: 2000.00, gstPercent: 5, taxAmount: 100.00, total: 2100.00 },
-      ],
-      subtotal: 2100.00,
-      discount: 0.00,
-      taxable_value: 2000.00,
-      cgst: 50.00,
-      sgst: 50.00,
-      shipping: 0,
-      round_off: 0.00,
-      grand_total: 2100.00,
-      amount_in_words: 'Two Thousand One Hundred Rupees Only',
-    }
-  }
-
-  // Default ORD-7393
-  return {
-    ...base,
-    billing_address: { ...base.billing_address, name: 'Riya Gupta' },
-    shipping_address: { ...base.shipping_address, name: 'Riya Gupta' },
-    items: [
-      { id: 1, description: 'Banarasi Brocade Dupatta', hsn: '6214', qty: 2, rate: 2000.00, taxable: 4000.00, gstPercent: 5, taxAmount: 200.00, total: 4200.00 },
-      { id: 2, description: 'Designer Scarf', hsn: '5007', qty: 1, rate: 1142.86, taxable: 1142.86, gstPercent: 5, taxAmount: 57.14, total: 1200.00 },
-    ],
-    subtotal: 5400.00,
-    discount: 0.00,
-    taxable_value: 5142.86,
-    cgst: 128.57,
-    sgst: 128.57,
-    shipping: 0,
-    round_off: 0.00,
-    grand_total: 5400.00,
-    amount_in_words: 'Five Thousand Four Hundred Rupees Only',
-  }
-}
+import { Printer, Loader2 } from 'lucide-react'
+import { format } from 'date-fns'
 
 export default function InvoicePage() {
   const params = useParams<{ id: string }>()
+  const orderId = params?.id
   
-  // Fetch dynamically based on ID
-  const orderId = params?.id || 'ORD-7393'
-  const order = getOrderData(orderId)
+  const { data, error, isLoading } = useSWR(orderId ? `/admin/orders/${orderId}` : null, fetcher)
+  
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (error || !data?.order) {
+    return (
+      <div className="flex h-screen items-center justify-center text-destructive">
+        Failed to load order data.
+      </div>
+    )
+  }
+
+  const order = data.order
+  const billing = typeof order.billingAddress === 'string' ? JSON.parse(order.billingAddress) : order.billingAddress || {}
+  const shipping = typeof order.shippingAddress === 'string' ? JSON.parse(order.shippingAddress) : order.shippingAddress || {}
+  
+  const subtotal = Number(order.subtotal || 0)
+  const discount = Number(order.discount || 0)
+  const taxableValue = subtotal - discount
+  const gstPercent = 5 // Example GST
+  const cgst = (taxableValue * (gstPercent / 2)) / 100
+  const sgst = (taxableValue * (gstPercent / 2)) / 100
+  const shippingFee = Number(order.shippingFee || 0)
+  const grandTotal = taxableValue + cgst + sgst + shippingFee
 
   const handlePrint = () => {
     window.print()
@@ -109,7 +55,6 @@ export default function InvoicePage() {
         </Button>
       </div>
 
-      {/* A4 Size Paper Container */}
       <div className="bg-white mx-auto shadow-lg print:shadow-none w-full max-w-full md:max-w-[210mm] print:w-[210mm] print:max-w-none overflow-hidden" style={{ minHeight: '297mm' }}>
         
         {/* Header */}
@@ -127,111 +72,91 @@ export default function InvoicePage() {
           </div>
           <div className="text-center md:text-right mt-4 md:mt-0">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">TAX INVOICE</h2>
-            <p className="text-xs md:text-sm">GSTIN: {order.gstin}</p>
-            <p className="text-xs md:text-sm">PAN: {order.pan}</p>
+            <p className="text-xs md:text-sm">GSTIN: 24ANCPN9292N2ZB</p>
+            <p className="text-xs md:text-sm">PAN: ANCPN9292N</p>
           </div>
         </div>
 
         <div className="p-4 md:p-8">
-          {/* Info Section */}
           <div className="flex flex-col md:flex-row justify-between mb-8 text-sm gap-4">
             <table className="w-full md:w-1/2">
               <tbody>
-                <tr><td className="text-gray-500 py-1 w-24 md:w-32">Invoice No.</td><td className="font-bold">{order.invoice_no}</td></tr>
-                <tr><td className="text-gray-500 py-1">Invoice Date</td><td className="font-bold">{order.invoice_date}</td></tr>
-                <tr><td className="text-gray-500 py-1">Order No.</td><td className="font-bold">{order.order_no}</td></tr>
-                <tr><td className="text-gray-500 py-1">Order Date</td><td className="font-bold">{order.order_date}</td></tr>
+                <tr><td className="text-gray-500 py-1 w-24 md:w-32">Invoice No.</td><td className="font-bold">{order.invoiceNo || 'PENDING'}</td></tr>
+                <tr><td className="text-gray-500 py-1">Invoice Date</td><td className="font-bold">{order.updatedAt ? format(new Date(order.updatedAt), 'dd MMM yyyy') : '-'}</td></tr>
+                <tr><td className="text-gray-500 py-1">Order No.</td><td className="font-bold">{order.orderNo}</td></tr>
+                <tr><td className="text-gray-500 py-1">Order Date</td><td className="font-bold">{order.createdAt ? format(new Date(order.createdAt), 'dd MMM yyyy') : '-'}</td></tr>
               </tbody>
             </table>
             <table className="w-full md:w-1/2">
               <tbody>
-                <tr><td className="text-gray-500 py-1 w-32">Place of Supply</td><td className="font-bold">{order.place_of_supply}</td></tr>
-                <tr><td className="text-gray-500 py-1">Supply Type</td><td className="font-bold">{order.supply_type}</td></tr>
-                <tr><td className="text-gray-500 py-1">Payment</td><td className="font-bold">{order.payment}</td></tr>
-                <tr><td className="text-gray-500 py-1">Reverse Charge</td><td className="font-bold">{order.reverse_charge}</td></tr>
+                <tr><td className="text-gray-500 py-1 w-32">Payment</td><td className="font-bold">{order.paymentMethod}</td></tr>
+                <tr><td className="text-gray-500 py-1">Status</td><td className="font-bold">{order.status}</td></tr>
               </tbody>
             </table>
           </div>
 
-          {/* Addresses */}
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="flex-1 bg-gray-50 p-4 rounded-md">
               <h3 className="text-xs font-bold text-[#8b1538] mb-2 uppercase">Bill To</h3>
-              <p className="font-bold text-base mb-1">{order.billing_address.name}</p>
-              <p className="text-gray-600 leading-tight">{order.billing_address.address}</p>
-              {order.billing_address.phone && <p className="text-gray-600 mt-1">Ph: {order.billing_address.phone}</p>}
+              <p className="font-bold text-base mb-1">{order.user?.firstName} {order.user?.lastName}</p>
+              <p className="text-gray-600 leading-tight whitespace-pre-line">{billing}</p>
             </div>
             <div className="flex-1 bg-gray-50 p-4 rounded-md">
               <h3 className="text-xs font-bold text-[#8b1538] mb-2 uppercase">Ship To</h3>
-              <p className="font-bold text-base mb-1">{order.shipping_address.name}</p>
-              <p className="text-gray-600 leading-tight">{order.shipping_address.address}</p>
-              {order.shipping_address.phone && <p className="text-gray-600 mt-1">Ph: {order.shipping_address.phone}</p>}
+              <p className="font-bold text-base mb-1">{order.user?.firstName} {order.user?.lastName}</p>
+              <p className="text-gray-600 leading-tight whitespace-pre-line">{shipping}</p>
             </div>
           </div>
 
-          {/* Items Table */}
           <div className="overflow-x-auto w-full mb-8">
             <table className="w-full text-sm min-w-[700px]">
-            <thead>
-              <tr className="bg-[#9b0c51] text-white">
-                <th className="py-2 px-2 text-left w-8">#</th>
-                <th className="py-2 px-2 text-left">Description</th>
-                <th className="py-2 px-2 text-left w-16">HSN</th>
-                <th className="py-2 px-2 text-right w-12">Qty</th>
-                <th className="py-2 px-2 text-right w-24">Rate</th>
-                <th className="py-2 px-2 text-right w-24">Taxable</th>
-                <th className="py-2 px-2 text-right w-16">GST%</th>
-                <th className="py-2 px-2 text-right w-20">Tax</th>
-                <th className="py-2 px-2 text-right w-24">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.items.map((item, index) => (
-                <tr key={item.id} className="border-b border-gray-100">
-                  <td className="py-3 px-2">{index + 1}</td>
-                  <td className="py-3 px-2">{item.description}</td>
-                  <td className="py-3 px-2">{item.hsn}</td>
-                  <td className="py-3 px-2 text-right">{item.qty}</td>
-                  <td className="py-3 px-2 text-right">{item.rate.toFixed(2)}</td>
-                  <td className="py-3 px-2 text-right">{item.taxable.toFixed(2)}</td>
-                  <td className="py-3 px-2 text-right">{item.gstPercent}%</td>
-                  <td className="py-3 px-2 text-right">{item.taxAmount.toFixed(2)}</td>
-                  <td className="py-3 px-2 text-right">{item.total.toFixed(2)}</td>
+              <thead>
+                <tr className="bg-[#9b0c51] text-white">
+                  <th className="py-2 px-2 text-left w-8">#</th>
+                  <th className="py-2 px-2 text-left">Description</th>
+                  <th className="py-2 px-2 text-right w-12">Qty</th>
+                  <th className="py-2 px-2 text-right w-24">Rate</th>
+                  <th className="py-2 px-2 text-right w-24">Taxable</th>
+                  <th className="py-2 px-2 text-right w-16">GST%</th>
+                  <th className="py-2 px-2 text-right w-20">Tax</th>
+                  <th className="py-2 px-2 text-right w-24">Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {order.items?.map((item: any, index: number) => {
+                  const qty = Number(item.quantity)
+                  const rate = Number(item.rate)
+                  const itemTotal = qty * rate
+                  const itemTax = (itemTotal * gstPercent) / 100
+                  return (
+                    <tr key={item.id || index} className="border-b border-gray-100">
+                      <td className="py-3 px-2">{index + 1}</td>
+                      <td className="py-3 px-2">{item.productName}</td>
+                      <td className="py-3 px-2 text-right">{qty}</td>
+                      <td className="py-3 px-2 text-right">{rate.toFixed(2)}</td>
+                      <td className="py-3 px-2 text-right">{itemTotal.toFixed(2)}</td>
+                      <td className="py-3 px-2 text-right">{gstPercent}%</td>
+                      <td className="py-3 px-2 text-right">{itemTax.toFixed(2)}</td>
+                      <td className="py-3 px-2 text-right">{(itemTotal + itemTax).toFixed(2)}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
 
-          {/* Totals Section */}
           <div className="flex flex-col md:flex-row justify-between items-start mb-16 gap-8">
             <div className="w-full md:w-1/2 md:pr-8">
-              <div className="bg-gray-50 p-4 border-l-4 border-[#9b0c51] mb-8">
-                <p className="text-xs font-bold text-[#9b0c51] mb-1 uppercase">Amount in words</p>
-                <p className="font-bold">{order.amount_in_words}</p>
-              </div>
-              
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 mt-8">
                 <div className="p-4 border rounded-md">
                   <p className="text-[10px] text-gray-500 mb-2 text-center uppercase tracking-widest">Scan to verify</p>
                   <div className="flex items-center gap-4">
-                    {/* Real QR code generated dynamically */}
                     <div className="w-16 h-16 bg-gray-50 flex items-center justify-center">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`Invoice:${order.invoice_no}|Total:${order.grand_total}`)}`} 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`Invoice:${order.invoiceNo || order.orderNo}|Total:${grandTotal}`)}`} 
                         alt="QR Code" 
                         className="w-full h-full object-contain"
                       />
-                    </div>
-                    {/* Fake Barcode */}
-                    <div className="flex flex-col items-center">
-                      <div className="flex h-12 items-end">
-                        {[...Array(30)].map((_, i) => (
-                          <div key={i} className="bg-black" style={{ width: Math.random() > 0.5 ? '1px' : '3px', height: '100%', marginRight: '2px' }} />
-                        ))}
-                      </div>
-                      <p className="text-[10px] text-gray-500 mt-1 tracking-widest">{order.order_no}</p>
                     </div>
                   </div>
                 </div>
@@ -241,23 +166,21 @@ export default function InvoicePage() {
             <div className="w-full md:w-1/2">
               <table className="w-full">
                 <tbody>
-                  <tr><td className="py-1 text-gray-600">Subtotal</td><td className="py-1 text-right font-bold">Rs. {order.subtotal.toFixed(2)}</td></tr>
-                  <tr><td className="py-1 text-gray-600">Discount</td><td className="py-1 text-right font-bold text-red-600">- Rs. {order.discount.toFixed(2)}</td></tr>
-                  <tr><td className="py-1 text-gray-600">Taxable Value</td><td className="py-1 text-right font-bold">Rs. {order.taxable_value.toFixed(2)}</td></tr>
-                  <tr><td className="py-1 text-gray-600">CGST (2.5%)</td><td className="py-1 text-right font-bold">Rs. {order.cgst.toFixed(2)}</td></tr>
-                  <tr><td className="py-1 text-gray-600">SGST (2.5%)</td><td className="py-1 text-right font-bold">Rs. {order.sgst.toFixed(2)}</td></tr>
-                  <tr><td className="py-1 text-gray-600">Shipping</td><td className="py-1 text-right font-bold text-green-600">{order.shipping === 0 ? 'FREE' : `Rs. ${order.shipping.toFixed(2)}`}</td></tr>
-                  <tr><td className="py-1 text-gray-600">Round Off</td><td className="py-1 text-right font-bold">Rs. {order.round_off.toFixed(2)}</td></tr>
+                  <tr><td className="py-1 text-gray-600">Subtotal</td><td className="py-1 text-right font-bold">Rs. {subtotal.toFixed(2)}</td></tr>
+                  {discount > 0 && <tr><td className="py-1 text-gray-600">Discount</td><td className="py-1 text-right font-bold text-red-600">- Rs. {discount.toFixed(2)}</td></tr>}
+                  <tr><td className="py-1 text-gray-600">Taxable Value</td><td className="py-1 text-right font-bold">Rs. {taxableValue.toFixed(2)}</td></tr>
+                  <tr><td className="py-1 text-gray-600">CGST ({(gstPercent/2)}%)</td><td className="py-1 text-right font-bold">Rs. {cgst.toFixed(2)}</td></tr>
+                  <tr><td className="py-1 text-gray-600">SGST ({(gstPercent/2)}%)</td><td className="py-1 text-right font-bold">Rs. {sgst.toFixed(2)}</td></tr>
+                  <tr><td className="py-1 text-gray-600">Shipping</td><td className="py-1 text-right font-bold text-green-600">{shippingFee === 0 ? 'FREE' : `Rs. ${shippingFee.toFixed(2)}`}</td></tr>
                   <tr className="bg-[#9b0c51] text-white">
                     <td className="py-2 px-2 font-bold uppercase">Grand Total</td>
-                    <td className="py-2 px-2 text-right font-bold">Rs. {order.grand_total.toFixed(2)}</td>
+                    <td className="py-2 px-2 text-right font-bold">Rs. {grandTotal.toFixed(2)}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Footer Details */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-t pt-4 border-gray-200 mt-16 gap-8">
             <div className="text-xs text-gray-600 w-full md:w-2/3 md:pr-8">
               <p className="font-bold text-black mb-1">Bank Details:</p>
@@ -277,7 +200,6 @@ export default function InvoicePage() {
           <div className="text-center mt-8 text-[10px] text-gray-400">
             This is a computer-generated invoice and does not require a physical signature.
           </div>
-
         </div>
       </div>
     </div>
