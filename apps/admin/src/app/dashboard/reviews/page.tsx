@@ -1,11 +1,30 @@
 'use client'
 
+import { useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Button, Badge } from '@ankita/ui'
 import { Star, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
-const MOCK_REVIEWS = [] as any[]
+const MOCK_REVIEWS = [
+  { id: 1, product: 'Pure Cotton Printed Saree', customer: 'Pooja Sharma', rating: 5, comment: 'Excellent quality and fast shipping!', date: '2026-10-10', status: 'Published' },
+  { id: 2, product: 'Bandhani Print Straight Kurti', customer: 'Neha Patel', rating: 4, comment: 'Nice fabric and fitting.', date: '2026-10-11', status: 'Published' },
+]
 
 export default function ReviewsPage() {
+  const [reviews, setReviews] = useState(MOCK_REVIEWS)
+
+  const handleDelete = (id: number) => {
+    if (!confirm('Are you sure you want to delete this review?')) return
+    setReviews((prev) => prev.filter((r) => r.id !== id))
+    toast.success('Review deleted successfully')
+  }
+
+  const handleToggleStatus = (id: number) => {
+    setReviews((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status: r.status === 'Published' ? 'Hidden' : 'Published' } : r))
+    )
+    toast.success('Review status updated')
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -29,7 +48,7 @@ export default function ReviewsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {MOCK_REVIEWS.map((review) => (
+            {reviews.map((review) => (
               <TableRow key={review.id}>
                 <TableCell className="font-medium">{review.product}</TableCell>
                 <TableCell>{review.customer}</TableCell>
@@ -46,15 +65,22 @@ export default function ReviewsPage() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => handleToggleStatus(review.id)}>
                     {review.status === 'Published' ? 'Hide' : 'Publish'}
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-destructive">
+                  <Button variant="ghost" size="sm" className="text-destructive" onClick={() => handleDelete(review.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </TableCell>
               </TableRow>
             ))}
+            {reviews.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
+                  No reviews found.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

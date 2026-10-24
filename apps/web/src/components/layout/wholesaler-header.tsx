@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Building2, LayoutDashboard, ShoppingBag, MessageSquare, LogOut } from 'lucide-react'
+import { Building2, LayoutDashboard, ShoppingBag, MessageSquare, LogOut, FileText } from 'lucide-react'
 import { Button } from '@ankita/ui'
 import { useAuth } from '@/hooks/use-auth'
 
@@ -10,6 +10,7 @@ const navigation = [
   { name: 'Dashboard', href: '/wholesaler', icon: LayoutDashboard },
   { name: 'Catalogs', href: '/wholesaler/catalogs', icon: ShoppingBag },
   { name: 'My Inquiries', href: '/wholesaler/inquiries', icon: MessageSquare },
+  { name: 'Orders & Invoices', href: '/profile/orders', icon: FileText },
 ]
 
 export function WholesalerHeader() {
@@ -19,12 +20,20 @@ export function WholesalerHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container-wide flex h-16 items-center">
-        <div className="mr-8 flex items-center gap-2">
-          <Building2 className="h-6 w-6 text-primary" />
-          <Link href="/wholesaler" className="hidden md:block">
-            <span className="font-bold text-lg tracking-tight">Ankita Processors B2B</span>
+        <div className="mr-8 flex items-center">
+          <Link href="/wholesaler" className="site-logo-link flex items-center gap-2.5 group" aria-label="Ankita Processors B2B">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="Ankita Processors Logo"
+              width={140}
+              height={44}
+              className="site-logo h-10 w-auto object-contain select-none shrink-0"
+            />
+            <span className="font-bold text-lg tracking-tight hidden md:inline-block">Ankita Processors B2B</span>
           </Link>
         </div>
+
         
         <nav className="flex flex-1 items-center space-x-6 text-sm font-medium">
           {navigation.map((item) => (

@@ -9,7 +9,11 @@ export const emailSchema = z
 
 export const phoneSchema = z
   .string()
-  .regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian phone number')
+  .transform((val) => val.replace(/[\s\-()]/g, ''))
+  .pipe(
+    z.string().regex(/^(?:\+91|91|0)?[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian phone number')
+  )
+  .transform((val) => val.replace(/^(?:\+91|91|0)/, ''))
 
 export const phoneOptionalSchema = phoneSchema.optional().or(z.literal(''))
 

@@ -3,9 +3,28 @@ import { Button } from '@ankita/ui'
 import { ArrowRight } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
 import { MOCK_PRODUCTS } from '@/lib/mock-data'
+import { formatApiProduct } from '@/lib/product-mapper'
+import type { Product } from '@ankita/types'
 
-export function BestSellersSection() {
-  const products = MOCK_PRODUCTS.filter((p) => p.isBestSeller).slice(0, 4)
+async function getBestSellers(): Promise<Product[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1'
+    const res = await fetch(`${apiUrl}/products?limit=8`, { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data) && data.length > 0) {
+        const formatted = data.map(formatApiProduct)
+        const best = formatted.filter((p) => p.isBestSeller)
+        return (best.length > 0 ? best : formatted).slice(0, 4)
+      }
+    }
+  } catch {}
+
+  return MOCK_PRODUCTS.filter((p) => p.isBestSeller).slice(0, 4)
+}
+
+export async function BestSellersSection() {
+  const products = await getBestSellers()
 
   return (
     <section className="section-py bg-stone-50">

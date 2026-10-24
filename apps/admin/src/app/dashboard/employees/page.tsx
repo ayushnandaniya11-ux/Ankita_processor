@@ -8,11 +8,24 @@ import { PageHeader } from '@ankita/ui'
 import { fetcher, api } from '@/lib/api'
 import Link from 'next/link'
 
+import { toast } from 'sonner'
+
 export default function EmployeesPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const { data, isLoading, mutate } = useSWR('/admin/employees', fetcher)
 
   const employees = data?.data?.data || [] // Assuming pagination format
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this employee?')) return
+    try {
+      await api.delete(`/admin/employees/${id}`)
+      toast.success('Employee deleted successfully')
+      mutate()
+    } catch (err: any) {
+      toast.error('Failed to delete employee')
+    }
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -107,6 +120,13 @@ export default function EmployeesPage() {
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive cursor-pointer"
+                          onClick={() => handleDelete(employee.id)}
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

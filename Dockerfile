@@ -21,3 +21,6 @@ RUN pnpm install --frozen-lockfile
 
 # Build all applications
 RUN pnpm run build
+
+# Install standalone production dependencies for compiled Adonis API
+RUN cd apps/api/build && npm ci --omit="dev"

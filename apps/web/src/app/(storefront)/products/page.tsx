@@ -2,47 +2,82 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Filter, Star, ChevronDown, Check } from 'lucide-react'
+import { Filter, Star } from 'lucide-react'
 import { Button, Input, Card, CardContent, Checkbox, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ankita/ui'
-import { APP_NAME } from '@ankita/config'
 import useSWR from 'swr'
 import apiClient from '@/lib/api/client'
+import { MOCK_PRODUCTS } from '@/lib/mock-data'
+import { formatCurrency, resolveImageUrl } from '@ankita/utils'
+
 const fetcher = (url: string) => apiClient.get(url).then(res => res.data)
 
-// Mock data for filter options
-const CATEGORIES = [
-  'Electronics', 'Clothing', 'Home & Kitchen', 'Books', 'Beauty', 'Sports'
+const ETHNIC_CATEGORIES = [
+  'Sarees', 'Dupattas', 'Scarves', 'Dress Material'
 ]
 
-const MOCK_PRODUCTS = [
-  { id: 1, name: 'Premium Wireless Headphones', price: 299.99, mrp: 399.99, rating: 4.8, reviews: 124, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80', category: 'Electronics' },
-  { id: 2, name: 'Minimalist Cotton T-Shirt', price: 29.99, mrp: 49.99, rating: 4.5, reviews: 89, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80', category: 'Clothing' },
-  { id: 3, name: 'Smart Home Security Camera', price: 149.99, mrp: 199.99, rating: 4.2, reviews: 56, image: 'https://images.unsplash.com/photo-1557438159-51eec7a6c9e8?w=500&q=80', category: 'Electronics' },
-  { id: 4, name: 'Ceramic Coffee Mug Set', price: 34.99, mrp: 45.00, rating: 4.9, reviews: 210, image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&q=80', category: 'Home & Kitchen' },
-  { id: 5, name: 'Yoga Mat with Alignment Lines', price: 45.00, mrp: 60.00, rating: 4.6, reviews: 34, image: 'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=500&q=80', category: 'Sports' },
-  { id: 6, name: 'Hydrating Face Serum', price: 55.00, mrp: 75.00, rating: 4.7, reviews: 423, image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80', category: 'Beauty' },
-]
+type CatalogItem = {
+  id: string
+  name: string
+  slug: string
+  price: number
+  mrp: number
+  rating: number
+  reviews: number
+  image: string
+  category: string
+}
 
 export default function CatalogPage() {
-  const [priceRange, setPriceRange] = useState([0, 500])
+  const [maxPrice, setMaxPrice] = useState(10000)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  
-  // Attempt to fetch from API, fallback to mock data
-  const { data: apiProducts } = useSWR('/products', fetcher)
-  
-  // Transform API data if available, otherwise use mock
-  const products = apiProducts?.data?.length > 0 
-    ? apiProducts.data.map((p: any) => ({
-        id: p.id,
+  const [sortBy, setSortBy] = useState('popular')
+
+  // Fetch live products and categories from API
+  const { data: apiProducts } = useSWR('/products', fetcher, { revalidateOnFocus: true })
+  const { data: apiCategories } = useSWR('/categories', fetcher)
+
+  const dynamicCategories: string[] = Array.isArray(apiCategories) && apiCategories.length > 0
+    ? Array.from(new Set([...apiCategories.map((c: any) => c.name), ...ETHNIC_CATEGORIES]))
+    : ETHNIC_CATEGORIES
+
+  const rawList = Array.isArray(apiProducts)
+    ? apiProducts
+    : Array.isArray(apiProducts?.data)
+    ? apiProducts.data
+    : []
+
+  const formattedApiProducts: CatalogItem[] = rawList
+    .filter((p: any) => p.isPublished !== false)
+    .map((p: any) => {
+      const primaryImg = p.imageUrl || (Array.isArray(p.images) ? (p.images.find((img: any) => img.isPrimary)?.url || p.images[0]?.url) : null)
+      return {
+        id: String(p.id),
         name: p.name,
-        price: p.sellingPrice,
-        mrp: p.mrp,
-        rating: 4.5, // Mock rating for now
-        reviews: Math.floor(Math.random() * 200) + 10,
-        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80', // Fallback image
-        category: 'Uncategorized'
-      }))
-    : MOCK_PRODUCTS
+        slug: p.slug || String(p.id),
+        price: Number(p.sellingPrice) || 0,
+        mrp: Number(p.mrp) || Number(p.sellingPrice) || 0,
+        rating: 4.8,
+        reviews: 24,
+        image: resolveImageUrl(primaryImg),
+        category: p.category?.name || 'Sarees',
+      }
+    })
+
+  const baseProducts: CatalogItem[] = formattedApiProducts.length > 0
+    ? formattedApiProducts
+    : (apiProducts === undefined
+        ? MOCK_PRODUCTS.map((p) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            price: p.sellingPrice,
+            mrp: p.mrp,
+            rating: p.avgRating,
+            reviews: p.totalReviews,
+            image: p.images[0]?.url || '',
+            category: p.category?.name || 'Sarees',
+          }))
+        : [])
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories(prev => 
@@ -50,25 +85,44 @@ export default function CatalogPage() {
     )
   }
 
+  // Filter products
+  const filteredProducts = baseProducts.filter((product: CatalogItem) => {
+    if (selectedCategories.length > 0) {
+      const match = selectedCategories.some(
+        c => c.toLowerCase() === product.category.toLowerCase()
+      )
+      if (!match) return false
+    }
+    if (product.price > maxPrice) {
+      return false
+    }
+    return true
+  })
+
+  // Sort
+  if (sortBy === 'price_low') {
+    filteredProducts.sort((a: CatalogItem, b: CatalogItem) => a.price - b.price)
+  } else if (sortBy === 'price_high') {
+    filteredProducts.sort((a: CatalogItem, b: CatalogItem) => b.price - a.price)
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">All Catalogues</h1>
-          <p className="text-muted-foreground mt-1">Discover our latest collection of premium products</p>
+          <h1 className="text-3xl font-bold tracking-tight">Women&apos;s Ethnic Collection</h1>
+          <p className="text-muted-foreground mt-1">Discover handcrafted sarees, dupattas, scarves, and dress materials.</p>
         </div>
-        
+
         <div className="flex items-center gap-4 w-full md:w-auto">
-          <Select defaultValue="popular">
+          <Select defaultValue="popular" onValueChange={setSortBy}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="popular">Most Popular</SelectItem>
-              <SelectItem value="newest">Newest Arrivals</SelectItem>
               <SelectItem value="price_low">Price: Low to High</SelectItem>
               <SelectItem value="price_high">Price: High to Low</SelectItem>
-              <SelectItem value="rating">Highest Rated</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -79,15 +133,15 @@ export default function CatalogPage() {
         <div className="w-full lg:w-64 flex-shrink-0 space-y-6">
           <div className="bg-card border rounded-xl p-5 shadow-sm space-y-6">
             <div className="flex items-center gap-2 font-semibold text-lg pb-4 border-b">
-              <Filter className="w-5 h-5" />
+              <Filter className="w-5 h-5 text-primary" />
               Filters
             </div>
-            
+
             {/* Categories */}
             <div className="space-y-4">
-              <h3 className="font-medium">Categories</h3>
+              <h3 className="font-medium text-sm">Categories</h3>
               <div className="space-y-3">
-                {CATEGORIES.map(category => (
+                {dynamicCategories.map(category => (
                   <div key={category} className="flex items-center space-x-2">
                     <Checkbox 
                       id={`cat-${category}`} 
@@ -96,7 +150,7 @@ export default function CatalogPage() {
                     />
                     <label 
                       htmlFor={`cat-${category}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm font-medium leading-none cursor-pointer"
                     >
                       {category}
                     </label>
@@ -104,104 +158,110 @@ export default function CatalogPage() {
                 ))}
               </div>
             </div>
-            
+
             <div className="border-t pt-4"></div>
 
             {/* Price Range */}
             <div className="space-y-4">
-              <h3 className="font-medium">Price Range</h3>
-              <div className="flex flex-col gap-2 my-6">
-                <input 
-                  type="range" 
-                  min="0" max="1000" step="10" 
-                  value={priceRange[1]} 
-                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                  className="w-full accent-primary" 
-                />
+              <div className="flex justify-between items-center">
+                <h3 className="font-medium text-sm">Max Price</h3>
+                <span className="text-xs font-bold text-primary">{formatCurrency(maxPrice)}</span>
               </div>
+              <input 
+                type="range" 
+                min="400" max="8000" step="100" 
+                value={maxPrice} 
+                onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                className="w-full accent-primary" 
+              />
               <div className="flex items-center justify-between gap-4">
-                <div className="grid gap-1.5">
+                <div className="grid gap-1">
                   <Label className="text-xs text-muted-foreground">Min</Label>
-                  <Input value={`$${priceRange[0]}`} readOnly className="h-8 text-sm" />
+                  <Input value="₹0" readOnly className="h-8 text-xs" />
                 </div>
-                <div className="grid gap-1.5">
+                <div className="grid gap-1">
                   <Label className="text-xs text-muted-foreground">Max</Label>
-                  <Input value={`$${priceRange[1]}`} readOnly className="h-8 text-sm" />
+                  <Input value={formatCurrency(maxPrice)} readOnly className="h-8 text-xs font-semibold" />
                 </div>
               </div>
             </div>
 
-            <div className="border-t pt-4"></div>
-
-            {/* Ratings */}
-            <div className="space-y-4">
-              <h3 className="font-medium">Customer Ratings</h3>
-              {[4, 3, 2, 1].map(rating => (
-                <div key={rating} className="flex items-center space-x-2">
-                  <Checkbox id={`rating-${rating}`} />
-                  <label htmlFor={`rating-${rating}`} className="flex items-center text-sm cursor-pointer">
-                    <div className="flex mr-2">
-                      {Array(5).fill(0).map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`w-4 h-4 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                        />
-                      ))}
-                    </div>
-                    & Up
-                  </label>
-                </div>
-              ))}
-            </div>
-
-            <Button className="w-full mt-4">Apply Filters</Button>
+            {selectedCategories.length > 0 && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full text-xs"
+                onClick={() => setSelectedCategories([])}
+              >
+                Clear Category Filters
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Product Grid */}
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product: any) => (
-            <Link href={`/products/${product.id}`} key={product.id} className="group">
-              <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-lg border-muted">
-                <div className="aspect-square overflow-hidden bg-muted relative">
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
-                  {product.mrp > product.price && (
-                    <div className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded">
-                      Sale {Math.round((1 - product.price / product.mrp) * 100)}%
+        <div className="flex-1">
+          {filteredProducts.length === 0 ? (
+            <div className="py-20 text-center border rounded-2xl border-dashed">
+              <p className="text-muted-foreground text-sm">No products found matching your filter criteria.</p>
+              <Button variant="link" onClick={() => { setSelectedCategories([]); setMaxPrice(6000) }}>
+                Reset Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              {filteredProducts.map((product) => (
+                <Link href={`/products/${product.slug}`} key={product.id} className="group">
+                  <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-lg border-muted">
+                    <div className="aspect-[3/4] overflow-hidden bg-muted relative flex items-center justify-center">
+                      {product.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none'
+                          }}
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-4xl">🛍️</div>
+                      )}
+                      {product.mrp > product.price && (
+                        <div className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-0.5 rounded">
+                          {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% Off
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <CardContent className="p-4 space-y-2">
-                  <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{product.category}</div>
-                  <h3 className="font-semibold text-lg line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-                    {product.name}
-                  </h3>
-                  
-                  {/* Reviews & Ratings */}
-                  <div className="flex items-center gap-1.5 pt-1">
-                    <div className="flex items-center text-yellow-400">
-                      <Star className="w-4 h-4 fill-current" />
-                    </div>
-                    <span className="font-medium text-sm">{product.rating}</span>
-                    <span className="text-muted-foreground text-xs">({product.reviews} reviews)</span>
-                  </div>
+                    <CardContent className="p-4 space-y-2">
+                      <div className="text-xs text-primary font-medium uppercase tracking-wider">{product.category}</div>
+                      <h3 className="font-semibold text-base line-clamp-1 leading-tight group-hover:text-primary transition-colors">
+                        {product.name}
+                      </h3>
+                      
+                      {/* Reviews & Ratings */}
+                      <div className="flex items-center gap-1.5 pt-1">
+                        <div className="flex items-center text-amber-400">
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                        </div>
+                        <span className="font-medium text-xs">{product.rating}</span>
+                        <span className="text-muted-foreground text-xs">({product.reviews})</span>
+                      </div>
 
-                  <div className="flex items-end gap-2 pt-2">
-                    <span className="text-xl font-bold">${product.price.toFixed(2)}</span>
-                    {product.mrp > product.price && (
-                      <span className="text-sm text-muted-foreground line-through mb-0.5">
-                        ${product.mrp.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                      <div className="flex items-baseline gap-2 pt-1">
+                        <span className="text-lg font-bold text-foreground">{formatCurrency(product.price)}</span>
+                        {product.mrp > product.price && (
+                          <span className="text-xs text-muted-foreground line-through">
+                            {formatCurrency(product.mrp)}
+                          </span>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

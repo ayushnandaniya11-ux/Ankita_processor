@@ -12,11 +12,20 @@ export function NewsletterSection() {
     e.preventDefault()
     if (!email) return
     setLoading(true)
-    // TODO: connect to API
-    await new Promise((r) => setTimeout(r, 800))
-    toast.success('You\'re subscribed! Welcome to the Ankita Processors family.')
-    setEmail('')
-    setLoading(false)
+    try {
+      if (typeof window !== 'undefined') {
+        const subs = JSON.parse(localStorage.getItem('ankita_subscribers') || '[]')
+        if (!subs.includes(email.toLowerCase())) {
+          subs.push(email.toLowerCase())
+          localStorage.setItem('ankita_subscribers', JSON.stringify(subs))
+        }
+      }
+      await new Promise((r) => setTimeout(r, 400))
+      toast.success("You're subscribed! Welcome to the Ankita Processors family.")
+      setEmail('')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

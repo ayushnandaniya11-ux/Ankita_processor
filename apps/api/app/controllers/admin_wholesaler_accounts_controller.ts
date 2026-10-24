@@ -10,16 +10,16 @@ export default class AdminWholesalerAccountsController {
 
   public async updateStatus({ params, request, response }: HttpContext) {
     const profile = await WholesalerProfile.findOrFail(params.id)
-    
+
     const schema = vine.object({
       approvalStatus: vine.enum(['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED']),
     })
-    
+
     const { approvalStatus } = await request.validateUsing(vine.compile(schema))
-    
+
     profile.approvalStatus = approvalStatus
     await profile.save()
-    
+
     return response.ok({ message: `Account status updated to ${approvalStatus}`, profile })
   }
 }

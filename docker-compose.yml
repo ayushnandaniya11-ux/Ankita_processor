@@ -1,4 +1,4 @@
-﻿version: '3.8'
+version: '3.8'
 
 services:
   postgres:
@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE:-ankita_processors}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -24,6 +24,9 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ankita_api
+    restart: unless-stopped
+    env_file:
+      - .env
     command: sh -c "cd apps/api/build && node bin/server.js"
     ports:
       - "3333:3333"
@@ -31,10 +34,6 @@ services:
       - NODE_ENV=production
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE=${DB_DATABASE}
-      - APP_KEY=${APP_KEY}
       - HOST=0.0.0.0
     depends_on:
       postgres:
@@ -45,9 +44,12 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ankita_web
+    restart: unless-stopped
+    env_file:
+      - .env
     command: pnpm --filter=@ankita/web start
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3333/api/v1}
@@ -59,9 +61,12 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ankita_admin
+    restart: unless-stopped
+    env_file:
+      - .env
     command: pnpm --filter=@ankita/admin start
     ports:
-      - "3001:3001"
+      - "4001:4001"
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3333/api/v1}

@@ -15,7 +15,8 @@ type Category = {
 }
 
 export default function CategoriesPage() {
-  const { data: categories, error, mutate } = useSWR<Category[]>('/admin/categories', fetcher)
+  const { data: categories, error, mutate, isLoading } = useSWR<Category[]>('/admin/categories', fetcher)
+  const categoryList = Array.isArray(categories) ? categories : []
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({ name: '', slug: '', description: '' })
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -122,7 +123,7 @@ export default function CategoriesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((cat) => (
+              {categoryList.map((cat) => (
                 <TableRow key={cat.id}>
                   <TableCell>{cat.id}</TableCell>
                   <TableCell className="font-medium">{cat.name}</TableCell>
@@ -133,10 +134,10 @@ export default function CategoriesPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {categories.length === 0 && (
+              {categoryList.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
-                    No categories found. Create one to get started.
+                    {isLoading ? 'Loading categories...' : 'No categories found. Create one to get started.'}
                   </TableCell>
                 </TableRow>
               )}

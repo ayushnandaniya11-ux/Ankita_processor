@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { X, ShoppingBag, Minus, Plus, Trash2 } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, Button, Separator } from '@ankita/ui'
-import { formatCurrency } from '@ankita/utils'
+import { formatCurrency, resolveImageUrl } from '@ankita/utils'
 import { useCart } from '@/hooks/use-cart'
 import { toast } from 'sonner'
 
@@ -66,11 +66,18 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             {/* Items */}
             <div className="flex-1 overflow-y-auto py-4">
               <div className="space-y-4 px-1">
-                {cart.items.map((item) => (
-                  <div key={item.id} className="flex gap-3">
-                    <div className="h-20 w-16 shrink-0 rounded-md bg-stone-100 flex items-center justify-center text-2xl">
-                      🛍️
-                    </div>
+                {cart.items.map((item) => {
+                  const itemImg = resolveImageUrl(item.productImage || (item as any).product?.imageUrl || (item as any).product?.images?.[0]?.url)
+                  return (
+                    <div key={item.id} className="flex gap-3">
+                      <div className="h-20 w-16 shrink-0 rounded-md bg-stone-100 overflow-hidden flex items-center justify-center border">
+                        {itemImg ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={itemImg} alt={item.productName} className="h-full w-full object-cover" />
+                        ) : (
+                          <span className="text-2xl">🛍️</span>
+                        )}
+                      </div>
                     <div className="flex flex-1 flex-col">
                       <p className="text-sm font-medium leading-tight line-clamp-2">{item.productName}</p>
                       <p className="text-xs text-muted-foreground">{item.color} · {item.size}</p>
@@ -105,7 +112,8 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                       </div>
                     </div>
                   </div>
-                ))}
+                )
+              })}
               </div>
             </div>
 

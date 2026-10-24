@@ -5,9 +5,18 @@ import { useRouter } from 'next/navigation'
 import useSWR from 'swr'
 import { api, fetcher } from '@/lib/api'
 import { toast } from 'sonner'
-import { Button, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ankita/ui'
+import { Button, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Checkbox, Label } from '@ankita/ui'
 import Link from 'next/link'
-import { X, UploadCloud } from 'lucide-react'
+import { X, UploadCloud, Globe2 } from 'lucide-react'
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+}
 
 export default function AddProductPage() {
   const router = useRouter()
@@ -16,6 +25,7 @@ export default function AddProductPage() {
   const [loading, setLoading] = useState(false)
   const [images, setImages] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
   const [formData, setFormData] = useState({ 
     name: '', 
     slug: '', 
@@ -24,7 +34,8 @@ export default function AddProductPage() {
     mrp: '', 
     sellingPrice: '', 
     stock: '', 
-    categoryId: '' 
+    categoryId: '',
+    isPublished: true,
   })
   
   const [sareeFields, setSareeFields] = useState({
@@ -37,9 +48,17 @@ export default function AddProductPage() {
   const selectedCategory = categories?.find(c => String(c.id) === formData.categoryId)
   const isSareeCategory = selectedCategory?.name.toLowerCase().includes('saree')
 
+  const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB per image
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files)
+      const oversized = files.filter(f => f.size > MAX_FILE_SIZE)
+      if (oversized.length > 0) {
+        toast.error(`Some files exceed the 25MB limit: ${oversized.map(f => f.name).join(', ')}`)
+        return
+      }
+
       setImages((prev) => [...prev, ...files])
       
       const newUrls = files.map(f => URL.createObjectURL(f))
@@ -50,6 +69,22 @@ export default function AddProductPage() {
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index))
     setPreviewUrls(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const setPrimaryImage = (index: number) => {
+    if (index === 0) return
+    setImages(prev => {
+      const updated = [...prev]
+      const [selected] = updated.splice(index, 1)
+      updated.unshift(selected)
+      return updated
+    })
+    setPreviewUrls(prev => {
+      const updated = [...prev]
+      const [selected] = updated.splice(index, 1)
+      updated.unshift(selected)
+      return updated
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,6 +101,8 @@ export default function AddProductPage() {
     payload.append('stock', String(formData.stock))
     if (formData.categoryId) payload.append('categoryId', String(formData.categoryId))
     
+    payload.append('isPublished', String(formData.isPublished))
+
     images.forEach(img => {
       payload.append('images[]', img)
     })
@@ -76,10 +113,14 @@ export default function AddProductPage() {
 
     try {
       await api.post('/admin/products', payload)
-      toast.success('Product created successfully')
+      toast.success(formData.isPublished ? 'Product created and published to Main Store!' : 'Product saved as draft')
       router.push('/dashboard/products')
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Something went wrong')
+      if (err.response?.status === 413 || err.response?.data?.message?.includes('too large')) {
+        toast.error('The uploaded files are too large. Please upload smaller images (max 25MB each).')
+      } else {
+        toast.error(err.response?.data?.message || 'Something went wrong')
+      }
     } finally {
       setLoading(false)
     }
@@ -103,7 +144,11 @@ export default function AddProductPage() {
             <label className="text-sm font-medium">Product Name *</label>
             <Input 
               value={formData.name} 
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+              onChange={(e) => {
+                const name = e.target.value
+                const newSlug = slugManuallyEdited ? formData.slug : slugify(name)
+                setFormData({ ...formData, name, slug: newSlug })
+              }} 
               required 
               placeholder="e.g. Floral Summer Dress"
             />
@@ -113,10 +158,32 @@ export default function AddProductPage() {
             <label className="text-sm font-medium">Slug *</label>
             <Input 
               value={formData.slug} 
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value })} 
+              onChange={(e) => {
+                setSlugManuallyEdited(true)
+                setFormData({ ...formData, slug: e.target.value })
+              }} 
               required 
               placeholder="e.g. floral-summer-dress"
             />
+          </div>
+
+          <div className="md:col-span-2 pt-2 pb-2 border-y flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="publish-toggle" 
+                checked={formData.isPublished} 
+                onCheckedChange={(checked) => setFormData({ ...formData, isPublished: Boolean(checked) })} 
+              />
+              <div className="grid gap-0.5 leading-none">
+                <Label htmlFor="publish-toggle" className="text-sm font-semibold cursor-pointer">
+                  Publish to Customer Storefront immediately
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  When enabled, this product will be visible to customers on the live storefront.
+                </p>
+              </div>
+            </div>
+            <Globe2 className={formData.isPublished ? "h-5 w-5 text-emerald-500" : "h-5 w-5 text-muted-foreground"} />
           </div>
           
           <div className="space-y-2">
@@ -190,9 +257,24 @@ export default function AddProductPage() {
                     type="button"
                     onClick={() => removeImage(index)}
                     className="absolute top-2 right-2 bg-background/80 rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:bg-background"
+                    title="Remove Image"
                   >
                     <X className="h-4 w-4" />
                   </button>
+                  {index === 0 ? (
+                    <span className="absolute bottom-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded shadow">
+                      Primary
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setPrimaryImage(index)}
+                      className="absolute bottom-1.5 left-1.5 bg-background/90 text-foreground text-[10px] font-medium px-1.5 py-0.5 rounded shadow opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                      title="Set as Primary Image"
+                    >
+                      Set Primary
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

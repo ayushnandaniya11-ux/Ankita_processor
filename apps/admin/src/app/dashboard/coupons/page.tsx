@@ -18,7 +18,8 @@ type Coupon = {
 }
 
 export default function CouponsPage() {
-  const { data: coupons, error, mutate } = useSWR<Coupon[]>('/admin/coupons', fetcher)
+  const { data: coupons, error, mutate, isLoading } = useSWR<Coupon[]>('/admin/coupons', fetcher)
+  const couponList = Array.isArray(coupons) ? coupons : []
   const [loading, setLoading] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState({ code: '', discount: '', type: 'Percentage', maxUsage: '' })
@@ -114,7 +115,7 @@ export default function CouponsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {coupons.map((coupon) => (
+            {couponList.map((coupon) => (
               <TableRow key={coupon.id}>
                 <TableCell className="font-mono font-bold">{coupon.code}</TableCell>
                 <TableCell>{coupon.discount}</TableCell>
@@ -133,10 +134,10 @@ export default function CouponsPage() {
                 </TableCell>
               </TableRow>
             ))}
-            {coupons.length === 0 && (
+            {couponList.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
-                  No coupons found.
+                  {isLoading ? 'Loading coupons...' : 'No coupons found.'}
                 </TableCell>
               </TableRow>
             )}

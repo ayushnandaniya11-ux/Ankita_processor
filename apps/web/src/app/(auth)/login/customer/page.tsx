@@ -27,7 +27,13 @@ export default function LoginPage() {
 
   async function onSubmit(values: LoginFormData) {
     try {
-      const result = await login(values)
+      const result: any = await login(values)
+      if (result?.requiresOtp) {
+        toast.info('Please verify your email to complete login.')
+        const debugParam = result.debugOtp ? `&debugOtp=${encodeURIComponent(result.debugOtp)}` : ''
+        router.push(`/verify-otp?userId=${result.userId}${debugParam}`)
+        return
+      }
       toast.success('Welcome back!')
       if (result?.user?.role === 'WHOLESALE') {
         router.push('/wholesaler')
@@ -35,7 +41,13 @@ export default function LoginPage() {
         router.push('/')
       }
     } catch (err: unknown) {
-      const message = (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message || 'Invalid credentials'
+      const resData = (err as any)?.response?.data
+      const message =
+        resData?.error?.message ||
+        resData?.errors?.[0]?.message ||
+        resData?.message ||
+        (typeof resData?.error === 'string' ? resData.error : null) ||
+        'Invalid email or password'
       toast.error(message)
     }
   }
@@ -79,7 +91,7 @@ export default function LoginPage() {
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel>Password</FormLabel>
-                    <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    <Link href="/forgot-password?role=customer" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                       Forgot password?
                     </Link>
                   </div>

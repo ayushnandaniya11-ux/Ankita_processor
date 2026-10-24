@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { Heart } from 'lucide-react'
 import { Badge, Button } from '@ankita/ui'
-import { formatCurrency, calcDiscountPercent } from '@ankita/utils'
+import { formatCurrency, calcDiscountPercent, resolveImageUrl } from '@ankita/utils'
 import type { Product } from '@ankita/types'
 import { toast } from 'sonner'
 import { useCart } from '@/hooks/use-cart'
@@ -20,7 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const { toggleWishlist, isWishlisted } = useWishlist()
   const [imgError, setImgError] = useState(false)
 
-  const primaryImage = product.images?.[0]?.url
+  const primaryImage = resolveImageUrl(product.imageUrl || product.images?.[0]?.url)
   const discount = calcDiscountPercent(product.mrp, product.sellingPrice)
   const wishlisted = isWishlisted(product.id)
 
@@ -32,7 +32,19 @@ export function ProductCard({ product }: ProductCardProps) {
       return
     }
     try {
-      await addItem({ productId: product.id, variantId: firstVariant.id, quantity: 1 })
+      await addItem({
+        productId: product.id,
+        variantId: firstVariant.id,
+        quantity: 1,
+        productName: product.name,
+        productSlug: product.slug || product.id,
+        productImage: primaryImage || '',
+        color: firstVariant.color || 'Standard',
+        size: firstVariant.size || 'Free Size',
+        unitPrice: product.sellingPrice,
+        mrp: product.mrp,
+        sku: firstVariant.sku || product.sku,
+      } as any)
       toast.success(`${product.name} added to cart`)
     } catch {
       toast.error('Failed to add to cart')
@@ -46,17 +58,16 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <Link href={`/products/${product.slug}`} className="group block">
+    <Link href={`/products/${product.slug || product.id}`} className="group block">
       <div className="relative overflow-hidden rounded-lg bg-muted product-card-hover">
         {/* Image */}
         <div className="relative aspect-[3/4]">
           {primaryImage && !imgError ? (
-            <Image
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={primaryImage}
               alt={product.name}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               onError={() => setImgError(true)}
             />
           ) : (

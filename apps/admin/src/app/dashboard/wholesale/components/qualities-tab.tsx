@@ -29,9 +29,14 @@ export function QualitiesTab() {
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this fabric quality?')) return
-    await api.delete(`/admin/wholesale/fabric-qualities/${id}`)
-    mutate()
+    if (!confirm('Are you sure you want to delete this fabric quality?')) return
+    try {
+      await api.delete(`/admin/wholesale/fabric-qualities/${id}`)
+      toast.success('Fabric quality deleted successfully')
+      mutate()
+    } catch (err: any) {
+      toast.error('Failed to delete fabric quality')
+    }
   }
 
   return (

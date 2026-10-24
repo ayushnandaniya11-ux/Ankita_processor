@@ -28,7 +28,13 @@ export default function WholesaleRegisterPage() {
       toast.success('Application submitted! We\'ll review and get back to you within 2-3 business days.')
       router.push('/wholesale')
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message || 'Registration failed'
+      const resData = (err as any)?.response?.data
+      const msg =
+        resData?.error?.message ||
+        resData?.errors?.[0]?.message ||
+        (typeof resData?.error === 'string' ? resData.error : null) ||
+        resData?.message ||
+        'Registration failed'
       toast.error(msg)
     }
   }

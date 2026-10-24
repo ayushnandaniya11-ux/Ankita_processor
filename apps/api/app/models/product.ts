@@ -34,6 +34,50 @@ export default class Product extends BaseModel {
   @column()
   declare isPublished: boolean
 
+  @column({
+    prepare: (value: any) => (value ? JSON.stringify(value) : JSON.stringify([])),
+    consume: (value: any) => {
+      if (!value) return []
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return []
+        }
+      }
+      return value
+    },
+  })
+  declare images: Array<{ id: string; url: string; sortOrder?: number; isPrimary?: boolean }>
+
+  @column()
+  declare imageUrl: string | null
+
+  @column({
+    prepare: (value: any) => (value ? (typeof value === 'string' ? value : JSON.stringify(value)) : null),
+    consume: (value: any) => {
+      if (!value) return null
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return value
+        }
+      }
+      return value
+    },
+  })
+  declare attributes: Record<string, any> | null
+
+  @column()
+  declare isFeatured: boolean
+
+  @column()
+  declare isNewArrival: boolean
+
+  @column()
+  declare isBestSeller: boolean
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Tag, BarChart3,
   Settings, Store, RotateCcw, Star, Truck, LogOut, Building2, ChevronDown,
-  Menu, X, Shield, UserPlus, Users2, Clock, Activity, FileText, CheckSquare
+  Menu, X, Shield, UserPlus, Users2, Clock, Activity, FileText, CheckSquare, FileSpreadsheet,
+  CreditCard, Banknote
 } from 'lucide-react'
 import { cn } from '@ankita/utils'
 import { Button, Avatar, AvatarFallback, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, ThemeToggle } from '@ankita/ui'
@@ -31,8 +32,11 @@ const NAV_GROUPS = [
     label: 'Commerce',
     items: [
       { href: '/dashboard/orders', icon: ShoppingCart, label: 'Orders' },
-      { href: '/dashboard/returns', icon: RotateCcw, label: 'Returns' },
+      { href: '/dashboard/payments', icon: CreditCard, label: 'Payments' },
+      { href: '/dashboard/cod-payments', icon: Banknote, label: 'COD Payments' },
       { href: '/dashboard/shipping', icon: Truck, label: 'Shipping' },
+      { href: '/dashboard/gst-reports', icon: FileSpreadsheet, label: 'GST Reports' },
+      { href: '/dashboard/returns', icon: RotateCcw, label: 'Returns' },
       { href: '/dashboard/coupons', icon: Tag, label: 'Coupons' },
     ],
   },
@@ -77,11 +81,24 @@ export function AdminSidebar({ mobile, onClose }: AdminSidebarProps) {
       'flex h-full w-60 flex-col border-r bg-[hsl(var(--sidebar-bg))] transition-colors',
       mobile && 'fixed inset-y-0 left-0 z-50 shadow-xl'
     )}>
-      <div className="flex h-16 items-center justify-between border-b px-4">
-        <Link href="/dashboard" onClick={onClose} className="text-sm font-bold tracking-widest uppercase">
-          {APP_NAME}
-          <span className="ml-2 rounded bg-foreground px-1.5 py-0.5 text-[10px] text-background">Admin</span>
+      <div className="flex h-16 items-center justify-between border-b px-3.5">
+        <Link href="/dashboard" onClick={onClose} className="site-logo-link flex items-center gap-2.5 group min-w-0" aria-label="Admin Dashboard">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="Ankita Processors Logo"
+            width={36}
+            height={36}
+            className="h-9 w-9 object-contain select-none shrink-0"
+          />
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs font-bold tracking-wider uppercase truncate text-foreground group-hover:text-primary transition-colors">
+              {APP_NAME}
+            </span>
+            <span className="shrink-0 rounded bg-foreground px-1 py-0.5 text-[9px] font-semibold text-background">Admin</span>
+          </div>
         </Link>
+
         {mobile && (
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X className="h-5 w-5" />
@@ -137,11 +154,18 @@ export function AdminSidebar({ mobile, onClose }: AdminSidebarProps) {
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem asChild><Link href="/dashboard/settings">Settings</Link></DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/admin/login" className="text-destructive focus:text-destructive">
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </Link>
+            <DropdownMenuItem
+              onClick={async () => {
+                const { api } = await import('@/lib/api')
+                try {
+                  await api.post('/auth/logout')
+                } catch {}
+                window.location.href = '/login'
+              }}
+              className="text-destructive focus:text-destructive cursor-pointer"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -165,7 +189,7 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
       <div className="flex items-center gap-2">
         <ThemeToggle />
         <Button variant="outline" size="sm" asChild>
-          <a href={process.env.NEXT_PUBLIC_STOREFRONT_URL || "http://localhost:3000/products"} target="_blank" rel="noopener noreferrer">
+          <a href={process.env.NEXT_PUBLIC_STOREFRONT_URL || "http://localhost:4000/products"} target="_blank" rel="noopener noreferrer">
             <Store className="mr-2 h-3.5 w-3.5" />
             View Store
           </a>

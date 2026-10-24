@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/hooks/use-auth'
 import { Card } from '@ankita/ui'
-import { Package, MessageSquare, Clock } from 'lucide-react'
+import { Package, MessageSquare, Clock, FileText } from 'lucide-react'
 import Link from 'next/link'
 
 export default function WholesalerDashboard() {
@@ -15,7 +15,7 @@ export default function WholesalerDashboard() {
         <p className="text-muted-foreground mt-2">Welcome back, {user?.name || 'Partner'}. Here is your business overview.</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary/10 rounded-full text-primary">
@@ -51,6 +51,19 @@ export default function WholesalerDashboard() {
               <p className="text-sm font-medium text-muted-foreground">Account Status</p>
               <h3 className="text-2xl font-bold text-green-600">Active</h3>
               <p className="text-sm text-muted-foreground">Approved wholesale partner</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-amber-500/10 rounded-full text-amber-600">
+              <FileText className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Orders & Invoices</p>
+              <h3 className="text-2xl font-bold">Tax Invoices</h3>
+              <Link href="/profile/orders" className="text-sm text-primary hover:underline">View &amp; Download &rarr;</Link>
             </div>
           </div>
         </Card>

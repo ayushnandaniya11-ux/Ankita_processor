@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Plus, Shield } from 'lucide-react'
+import { Plus, Shield, Trash } from 'lucide-react'
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Badge, Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Input, Label, Checkbox } from '@ankita/ui'
 import { PageHeader } from '@ankita/ui'
 import { fetcher, api } from '@/lib/api'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 const MOCK_ROLES = [
   { id: 1, name: 'Product Manager', description: 'Manages product listings, images, and categories.', permissions: [1, 2, 3] },
@@ -52,9 +53,20 @@ export default function RolesPage() {
       setSelectedPerms([])
     } catch (err) {
       console.error(err)
-      alert('Failed to create role')
+      toast.error('Failed to create role')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this role?')) return
+    try {
+      await api.delete(`/admin/roles/${id}`)
+      toast.success('Role deleted successfully')
+      mutate()
+    } catch (err: any) {
+      toast.error('Failed to delete role')
     }
   }
 
@@ -154,8 +166,11 @@ export default function RolesPage() {
                   <TableCell>
                     <Badge variant="secondary">{role.permissions?.length || 0} permissions</Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right space-x-2">
                     <Button variant="ghost" size="sm">Edit</Button>
+                    <Button variant="ghost" size="sm" className="text-destructive" onClick={() => handleDelete(role.id)}>
+                      <Trash className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))

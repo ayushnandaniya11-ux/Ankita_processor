@@ -3,14 +3,31 @@ import Link from 'next/link'
 import { ProductCard } from '@/components/product/product-card'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@ankita/ui'
 import { MOCK_PRODUCTS } from '@/lib/mock-data'
+import { formatApiProduct } from '@/lib/product-mapper'
+import type { Product } from '@ankita/types'
 
 export const metadata: Metadata = {
   title: 'New Arrivals',
   description: 'Discover the latest additions to our collection — fresh styles just arrived.',
 }
 
-export default function NewArrivalsPage() {
-  const products = MOCK_PRODUCTS.filter((p) => p.isNewArrival)
+async function getNewArrivals(): Promise<Product[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1'
+    const res = await fetch(`${apiUrl}/products`, { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data) && data.length > 0) {
+        return data.map(formatApiProduct)
+      }
+    }
+  } catch {}
+
+  return MOCK_PRODUCTS.filter((p) => p.isNewArrival)
+}
+
+export default async function NewArrivalsPage() {
+  const products = await getNewArrivals()
 
   return (
     <div className="container-wide py-8">

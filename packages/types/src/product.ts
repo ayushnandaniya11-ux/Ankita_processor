@@ -18,6 +18,7 @@ export interface Product extends BaseEntity {
   brand?: string
   fabric?: string
   gender: 'FEMALE' | 'MALE' | 'UNISEX'
+  imageUrl?: string | null
   images: ProductImage[]
   variants: ProductVariant[]
   mrp: number

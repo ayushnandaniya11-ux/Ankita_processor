@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Button, Input, Label, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@ankita/ui'
+import { Button, Input, Label, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox } from '@ankita/ui'
 import { authApi } from '@/lib/api/auth'
 import { APP_NAME } from '@ankita/config'
 import { useAuth } from '@/hooks/use-auth'
@@ -13,6 +13,7 @@ export default function EmployeeLoginPage() {
   const { mutate } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -22,7 +23,7 @@ export default function EmployeeLoginPage() {
     setLoading(true)
 
     try {
-      const response = (await authApi.login({ email, password })) as any
+      const response = (await authApi.login({ email, password, rememberMe })) as any
       const user = response.user || response.data?.user
       
       // Verification
@@ -52,9 +53,20 @@ export default function EmployeeLoginPage() {
       </div>
       <Card className="w-full max-w-md shadow-xl border-t-4 border-t-primary">
         <CardHeader className="space-y-2 text-center">
+          <div className="mx-auto flex items-center justify-center mb-1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="Ankita Processors Logo"
+              width={64}
+              height={64}
+              className="h-16 w-16 object-contain select-none"
+            />
+          </div>
           <div className="mx-auto bg-primary text-primary-foreground font-bold tracking-widest text-xs px-2 py-1 rounded w-fit mb-2">
             EMPLOYEE PORTAL
           </div>
+
           <CardTitle className="text-2xl font-bold tracking-tight">
             {APP_NAME} Workspace
           </CardTitle>
@@ -94,6 +106,19 @@ export default function EmployeeLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+            </div>
+            <div className="flex items-center space-x-2 pt-1">
+              <Checkbox
+                id="employee-remember-me"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(Boolean(checked))}
+              />
+              <Label
+                htmlFor="employee-remember-me"
+                className="text-sm font-medium leading-none cursor-pointer"
+              >
+                Remember me (30 days persistent session)
+              </Label>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Authenticating...' : 'Sign In'}

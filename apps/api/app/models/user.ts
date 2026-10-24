@@ -1,6 +1,9 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
-import { BaseModel, column, beforeSave } from '@adonisjs/lucid/orm'
+import { BaseModel, column, beforeSave, hasMany } from '@adonisjs/lucid/orm'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import UserSession from '#models/user_session'
+import PasswordResetToken from '#models/password_reset_token'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -12,7 +15,7 @@ export default class User extends BaseModel {
   @column()
   declare email: string
 
-  @column()
+  @column({ serializeAs: null })
   declare password: string | null
 
   @column()
@@ -21,10 +24,10 @@ export default class User extends BaseModel {
   @column()
   declare role: 'CUSTOMER' | 'ADMIN' | 'WHOLESALE' | 'SUPER_ADMIN' | 'EMPLOYEE'
 
-  @column()
+  @column({ serializeAs: null })
   declare otp: string | null
 
-  @column.dateTime()
+  @column.dateTime({ serializeAs: null })
   declare otpExpiresAt: DateTime | null
 
   @column.dateTime({ autoCreate: true })
@@ -32,6 +35,12 @@ export default class User extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @hasMany(() => UserSession)
+  declare sessions: HasMany<typeof UserSession>
+
+  @hasMany(() => PasswordResetToken)
+  declare passwordResetTokens: HasMany<typeof PasswordResetToken>
 
   @beforeSave()
   static async hashPassword(user: User) {

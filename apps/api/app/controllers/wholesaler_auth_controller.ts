@@ -3,7 +3,7 @@ import WholesalerProfile from '#models/wholesaler_profile'
 import type { HttpContext } from '@adonisjs/core/http'
 import vine from '@vinejs/vine'
 import db from '@adonisjs/lucid/services/db'
-import encryption from '@adonisjs/core/services/encryption'
+import SessionService from '#services/session_service'
 
 const wholesaleRegisterValidator = vine.compile(
   vine.object({
@@ -15,16 +15,16 @@ const wholesaleRegisterValidator = vine.compile(
       .toUpperCase()
       // Basic Indian GSTIN format check
       .regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
-      .unique(async (db, value) => {
-        const profile = await db.from('wholesaler_profiles').where('gstin', value).first()
+      .unique(async (dbClient, value) => {
+        const profile = await dbClient.from('wholesaler_profiles').where('gstin', value).first()
         return !profile
       }),
     phone: vine.string().trim().minLength(10),
     email: vine
       .string()
       .email()
-      .unique(async (db, value) => {
-        const user = await db.from('users').where('email', value).first()
+      .unique(async (dbClient, value) => {
+        const user = await dbClient.from('users').where('email', value).first()
         return !user
       }),
     password: vine.string().minLength(8),
@@ -85,7 +85,8 @@ export default class WholesalerAuthController {
       // Note: Admin notification logic could be added here
 
       return response.created({
-        message: 'Your wholesaler registration has been submitted successfully. Your account is awaiting approval.',
+        message:
+          'Your wholesaler registration has been submitted successfully. Your account is awaiting approval.',
       })
     } catch (error) {
       await trx.rollback()
@@ -101,14 +102,19 @@ export default class WholesalerAuthController {
     if (!user || !user.password) {
       return response.badRequest({ error: { message: 'Invalid credentials' } })
     }
-    
+
     const isValid = await User.verifyCredentials(email, password)
     if (!isValid) {
       return response.badRequest({ error: { message: 'Invalid credentials' } })
     }
 
     if (user.role !== 'WHOLESALE') {
-      return response.forbidden({ error: { message: 'This account is not a wholesale account. Please login through the customer portal.' } })
+      return response.forbidden({
+        error: {
+          message:
+            'This account is not a wholesale account. Please login through the customer portal.',
+        },
+      })
     }
 
     const profile = await WholesalerProfile.findBy('userId', user.id)
@@ -117,26 +123,36 @@ export default class WholesalerAuthController {
     }
 
     if (profile.approvalStatus === 'PENDING') {
-      return response.forbidden({ error: { message: 'Your account is pending approval. Please wait for an administrator to review your application.' } })
+      return response.forbidden({
+        error: {
+          message:
+            'Your account is pending approval. Please wait for an administrator to review your application.',
+        },
+      })
     }
-    
+
     if (profile.approvalStatus === 'REJECTED') {
-      return response.forbidden({ error: { message: 'Your wholesale application was rejected. Please contact support.' } })
+      return response.forbidden({
+        error: { message: 'Your wholesale application was rejected. Please contact support.' },
+      })
     }
-    
+
     if (profile.approvalStatus === 'SUSPENDED') {
-      return response.forbidden({ error: { message: 'Your wholesale account has been suspended.' } })
+      return response.forbidden({
+        error: { message: 'Your wholesale account has been suspended.' },
+      })
     }
 
-    const expiresIn = rememberMe ? '30 days' : undefined
-    const token = encryption.encrypt({ userId: user.id }, expiresIn)
+    // Rotate/revoke any existing session to prevent session fixation
+    const existingToken = SessionService.extractSessionToken(ctx)
+    if (existingToken) {
+      await SessionService.revokeSession(existingToken, 'ROTATED_ON_LOGIN').catch(() => {})
+    }
 
-    response.cookie('authToken', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: rememberMe ? 30 * 24 * 60 * 60 : undefined,
+    // Create persistent session in PostgreSQL and set secure HTTP-only cookie
+    await SessionService.createSession(user, {
+      isRememberMe: Boolean(rememberMe),
+      ctx,
     })
 
     return response.ok({
@@ -146,7 +162,7 @@ export default class WholesalerAuthController {
         name: user.name,
         email: user.email,
         role: user.role,
-        approvalStatus: profile.approvalStatus
+        approvalStatus: profile.approvalStatus,
       },
     })
   }

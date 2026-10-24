@@ -2,7 +2,10 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ShoppingBag, Heart, Search, User, Menu, X, ChevronDown } from 'lucide-react'
+import { 
+  ShoppingBag, Heart, Search, User, Menu, X, ChevronDown, 
+  Package, Clock, Settings, Shield, LogOut, LogIn, UserPlus, Building2, Store 
+} from 'lucide-react'
 import { 
   Button, 
   Sheet, 
@@ -49,8 +52,16 @@ export function StorefrontHeader() {
     <>
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors">
         <div className="container-wide flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center group">
-            <span className="font-heading font-bold text-2xl tracking-tight transition-colors group-hover:text-primary">
+          <Link href="/" className="site-logo-link flex items-center gap-2.5 sm:gap-3 group" aria-label="Ankita Processors Home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="Ankita Processors Logo"
+              width={180}
+              height={56}
+              className="site-logo select-none shrink-0"
+            />
+            <span className="font-heading font-bold text-lg sm:text-xl lg:text-2xl tracking-tight text-foreground transition-colors group-hover:text-primary hidden sm:inline-block">
               {APP_NAME}
             </span>
           </Link>
@@ -109,43 +120,111 @@ export function StorefrontHeader() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Account">
-                    <User className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" className="relative rounded-full hover:bg-primary/10 transition-colors" aria-label="Account">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary font-bold text-sm">
+                      {user.name ? user.name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                    </div>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" sideOffset={8} className="w-56">
-                  <DropdownMenuLabel className="font-normal">
+                <DropdownMenuContent align="end" sideOffset={8} className="w-64 p-2 shadow-xl border rounded-xl">
+                  <DropdownMenuLabel className="p-3 bg-muted/40 rounded-lg mb-1">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary shrink-0">
+                          {user.role}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      {user.phone && (
+                        <p className="text-[11px] text-muted-foreground/80 font-mono">{user.phone}</p>
+                      )}
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="my-1" />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer w-full">View Profile</Link>
+                    <Link href="/profile" className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-accent text-sm">
+                      <User className="h-4 w-4 text-primary" />
+                      <span>My Account</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/orders" className="cursor-pointer w-full">Orders</Link>
+                    <Link href="/orders" className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-accent text-sm">
+                      <Package className="h-4 w-4 text-primary" />
+                      <span>My Orders</span>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders" className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-accent text-sm">
+                      <Clock className="h-4 w-4 text-primary" />
+                      <span>Order Tracking</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-1" />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile/personal-information" className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-accent text-sm">
+                      <Settings className="h-4 w-4 text-muted-foreground" />
+                      <span>Profile Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile/security" className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-accent text-sm">
+                      <Shield className="h-4 w-4 text-muted-foreground" />
+                      <span>Security Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-1" />
                   <DropdownMenuItem 
-                    className="cursor-pointer text-red-600 focus:text-red-600 w-full text-left flex items-center px-2 py-1.5 text-sm outline-none" 
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 text-sm font-medium" 
                     onSelect={async (e) => {
                       e.preventDefault()
                       await logout()
                       window.location.href = '/'
                     }}
                   >
-                    Log out
+                    <LogOut className="h-4 w-4 text-red-600" />
+                    <span>Log Out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/login">
-                <Button variant="ghost" size="icon" aria-label="Login">
-                  <User className="h-5 w-5" />
-                </Button>
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Account">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={8} className="w-60 p-2 shadow-xl border rounded-xl">
+                  <DropdownMenuLabel className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Customer Account
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem asChild>
+                    <Link href="/login/customer" className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-accent font-medium text-sm">
+                      <LogIn className="h-4 w-4 text-primary" />
+                      <span>Customer Sign in</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/register/customer" className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-accent font-medium text-sm">
+                      <UserPlus className="h-4 w-4 text-primary" />
+                      <span>Register as Customer</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-1.5" />
+                  <DropdownMenuItem asChild>
+                    <Link href="/login/wholesaler" className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-accent text-xs text-muted-foreground">
+                      <Building2 className="h-3.5 w-3.5 text-orange-600" />
+                      <span>Wholesale Portal</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/login" className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer hover:bg-accent text-xs text-muted-foreground">
+                      <Store className="h-3.5 w-3.5" />
+                      <span>All Account Types</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
 
             <Button
@@ -172,17 +251,40 @@ export function StorefrontHeader() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-72">
-                <div className="flex flex-col gap-6 pt-4">
+              <SheetContent side="left" className="w-80">
+                <div className="flex flex-col gap-5 pt-4">
                   <Link
                     href="/"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center py-4"
+                    className="site-logo-link flex items-center justify-center gap-3 py-2 group"
+                    aria-label="Ankita Processors Home"
                   >
-                    <span className="font-heading font-bold text-2xl tracking-tight text-primary">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/logo.png"
+                      alt="Ankita Processors Logo"
+                      width={120}
+                      height={44}
+                      className="site-logo h-11 w-auto object-contain select-none"
+                    />
+                    <span className="font-heading font-bold text-xl tracking-tight text-foreground transition-colors group-hover:text-primary">
                       {APP_NAME}
                     </span>
                   </Link>
+
+
+                  {user ? (
+                    <div className="p-3 bg-muted/50 rounded-xl space-y-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold text-sm truncate">{user.name}</p>
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                          {user.role}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                  ) : null}
+
                   <Separator />
                   <nav className="flex flex-col gap-1">
                     {NAV_LINKS.map((link) => (
@@ -190,7 +292,7 @@ export function StorefrontHeader() {
                         <Link
                           href={link.href}
                           onClick={() => setMobileOpen(false)}
-                          className="block rounded-md px-3 py-2.5 text-sm font-medium text-foreground hover:bg-accent"
+                          className="block rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-accent"
                         >
                           {link.label}
                         </Link>
@@ -201,7 +303,7 @@ export function StorefrontHeader() {
                                 key={child.href}
                                 href={child.href}
                                 onClick={() => setMobileOpen(false)}
-                                className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+                                className="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
                               >
                                 {child.label}
                               </Link>
@@ -213,32 +315,63 @@ export function StorefrontHeader() {
                   </nav>
                   <Separator />
                   <div className="flex flex-col gap-2">
-                    <Link href={user ? '/profile' : '/login'} onClick={() => setMobileOpen(false)}>
-                      <Button variant="outline" className="w-full">
-                        {user ? 'My Account' : 'Login / Register'}
-                      </Button>
-                    </Link>
-                    <Link href="/orders" onClick={() => setMobileOpen(false)}>
-                      <Button variant="ghost" className="w-full">
-                        My Orders
-                      </Button>
-                    </Link>
-                    <Link href="/wholesale" onClick={() => setMobileOpen(false)}>
-                      <Button variant="ghost" className="w-full">
-                        Wholesale
-                      </Button>
-                    </Link>
-                    {user && (
-                      <Button 
-                        variant="ghost" 
-                        className="w-full text-red-600 hover:text-red-600 hover:bg-red-50"
-                        onClick={async () => {
-                          await logout()
-                          window.location.href = '/'
-                        }}
-                      >
-                        Log out
-                      </Button>
+                    {user ? (
+                      <>
+                        <Link href="/profile" onClick={() => setMobileOpen(false)}>
+                          <Button variant="outline" className="w-full justify-start gap-2">
+                            <User className="h-4 w-4" /> My Account
+                          </Button>
+                        </Link>
+                        <Link href="/orders" onClick={() => setMobileOpen(false)}>
+                          <Button variant="outline" className="w-full justify-start gap-2">
+                            <Package className="h-4 w-4" /> My Orders
+                          </Button>
+                        </Link>
+                        <Link href="/orders" onClick={() => setMobileOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                            <Clock className="h-4 w-4" /> Order Tracking
+                          </Button>
+                        </Link>
+                        <Link href="/profile/personal-information" onClick={() => setMobileOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                            <Settings className="h-4 w-4" /> Profile Settings
+                          </Button>
+                        </Link>
+                        <Link href="/profile/security" onClick={() => setMobileOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                            <Shield className="h-4 w-4" /> Security Settings
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-start gap-2 text-red-600 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                          onClick={async () => {
+                            await logout()
+                            setMobileOpen(false)
+                            window.location.href = '/'
+                          }}
+                        >
+                          <LogOut className="h-4 w-4" /> Log out
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/login/customer" onClick={() => setMobileOpen(false)}>
+                          <Button className="w-full justify-start gap-2">
+                            <LogIn className="h-4 w-4" /> Customer Sign in
+                          </Button>
+                        </Link>
+                        <Link href="/register/customer" onClick={() => setMobileOpen(false)}>
+                          <Button variant="outline" className="w-full justify-start gap-2">
+                            <UserPlus className="h-4 w-4" /> Customer Registration
+                          </Button>
+                        </Link>
+                        <Link href="/login/wholesaler" onClick={() => setMobileOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start gap-2 text-orange-600 hover:text-orange-700">
+                            <Building2 className="h-4 w-4" /> Wholesale Portal
+                          </Button>
+                        </Link>
+                      </>
                     )}
                   </div>
                 </div>

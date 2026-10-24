@@ -75,7 +75,7 @@ export default function WholesalerLoginPage() {
                   <FormItem>
                     <div className="flex items-center justify-between">
                       <FormLabel>Password</FormLabel>
-                      <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                      <Link href="/forgot-password?role=wholesaler" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                         Forgot password?
                       </Link>
                     </div>

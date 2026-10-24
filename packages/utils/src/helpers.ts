@@ -64,3 +64,26 @@ export function sleep(ms: number): Promise<void> {
 export function tempId(): string {
   return `temp_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
 }
+
+/**
+ * Resolves a product or catalog image URL to an absolute URL.
+ * Handles relative /uploads paths, full URLs, and fallback gracefully without substituting unrelated images.
+ */
+export function resolveImageUrl(url: string | null | undefined, fallbackApiUrl = 'http://localhost:3333'): string {
+  if (!url || typeof url !== 'string' || !url.trim()) return ''
+  const trimmed = url.trim()
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+    return trimmed
+  }
+  const cleanBase = (
+    ((globalThis as any).process?.env?.NEXT_PUBLIC_API_URL as string) ||
+    fallbackApiUrl
+  ).replace(/\/api\/v1\/?$/, '')
+
+
+  if (trimmed.startsWith('/')) {
+    return `${cleanBase}${trimmed}`
+  }
+  return `${cleanBase}/${trimmed}`
+}
+

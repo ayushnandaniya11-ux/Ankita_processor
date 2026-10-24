@@ -17,12 +17,28 @@ export function HeroSection() {
 
       <div className="container-wide relative z-10 flex min-h-[70vh] flex-col items-center justify-center py-20 md:py-32 text-center">
 
+        {/* Heritage Logo Badge */}
+        <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 text-amber-800 dark:text-amber-300 mb-6 backdrop-blur-sm shadow-sm animate-fade-in-up">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="Ankita Processors Emblem"
+            width={22}
+            height={22}
+            className="w-5 h-5 object-contain"
+          />
+          <span className="text-xs font-semibold tracking-wider uppercase">
+            Ankita Processors &bull; Authentic Jetpur Craftsmanship
+          </span>
+        </div>
+
         {/* Heading with Premium Font & Gradient Text */}
         <h1 className="mx-auto max-w-5xl text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5rem] animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           Elegance Woven
           <br className="hidden sm:block" />
           <span className="italic font-light gradient-text"> into Every Thread</span>
         </h1>
+
 
         {/* Description */}
         <p className="mt-6 max-w-2xl text-base sm:text-lg md:text-xl text-muted-foreground font-light leading-relaxed animate-fade-in-up px-4" style={{ animationDelay: '0.2s' }}>

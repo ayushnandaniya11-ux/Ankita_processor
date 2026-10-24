@@ -9,11 +9,20 @@ export default class RbacMiddleware {
       return ctx.response.unauthorized({ error: 'Unauthorized' })
     }
 
-    if (user.role === 'SUPER_ADMIN') {
-      return next() // Super admin has all permissions
+    if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+      const employee = await Employee.query()
+        .where('user_id', user.id)
+        .preload('roles', (query) => {
+          query.preload('permissions')
+        })
+        .first()
+      if (employee) {
+        ctx.employee = employee
+      }
+      return next()
     }
 
-    if (user.role !== 'EMPLOYEE' && user.role !== 'ADMIN') {
+    if (user.role !== 'EMPLOYEE') {
       return ctx.response.forbidden({ error: 'Forbidden: You are not an employee' })
     }
 

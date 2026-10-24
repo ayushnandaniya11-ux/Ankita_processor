@@ -3,9 +3,26 @@ import { Button } from '@ankita/ui'
 import { ArrowRight } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
 import { MOCK_PRODUCTS } from '@/lib/mock-data'
+import { formatApiProduct } from '@/lib/product-mapper'
+import type { Product } from '@ankita/types'
 
-export function NewArrivalsSection() {
-  const products = MOCK_PRODUCTS.filter((p) => p.isNewArrival).slice(0, 4)
+async function getNewArrivals(): Promise<Product[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1'
+    const res = await fetch(`${apiUrl}/products?limit=8`, { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data) && data.length > 0) {
+        return data.map(formatApiProduct).slice(0, 4)
+      }
+    }
+  } catch {}
+
+  return MOCK_PRODUCTS.filter((p) => p.isNewArrival).slice(0, 4)
+}
+
+export async function NewArrivalsSection() {
+  const products = await getNewArrivals()
 
   return (
     <section className="section-py">

@@ -7,8 +7,9 @@ import vine from '@vinejs/vine'
 import { DateTime } from 'luxon'
 
 export default class ApprovalRequestsController {
-  public async index({ response, auth, ctx }: HttpContext | any) {
-    const user = auth.user!
+  public async index(ctx: HttpContext) {
+    const user = ctx.user || ctx.auth?.user
+    if (!user) return ctx.response.unauthorized({ error: 'Unauthorized' })
 
     // Admin sees all, employee sees own
     const query = ApprovalRequest.query()
@@ -17,16 +18,17 @@ export default class ApprovalRequestsController {
 
     if (user.role !== 'SUPER_ADMIN' && user.role !== 'ADMIN') {
       const employee = ctx.employee
-      if (!employee) return response.forbidden({ error: 'Not an employee' })
+      if (!employee) return ctx.response.forbidden({ error: 'Not an employee' })
       query.where('employee_id', employee.id)
     }
 
     const requests = await query
-    return response.ok({ data: requests })
+    return ctx.response.ok({ data: requests })
   }
 
-  public async store({ request, response, auth, ctx }: HttpContext | any) {
-    const user = auth.user!
+  public async store(ctx: HttpContext) {
+    const { request, response } = ctx
+    const user = ctx.user || ctx.auth?.user
     const employee = ctx.employee
 
     if (!employee) {
@@ -59,20 +61,22 @@ export default class ApprovalRequestsController {
     // Notify admins
     // In a real app, query all ADMIN / SUPER_ADMIN users and create notifications
 
-    ActivityLogService.log(
-      user.id,
-      'SUBMIT_APPROVAL_REQUEST',
-      'APPROVAL_WORKFLOW',
-      `Submitted request to ${payload.actionType} ${payload.entityType}`,
-      request.ip()
-    )
+    if (user) {
+      ActivityLogService.log(
+        user.id,
+        'SUBMIT_APPROVAL_REQUEST',
+        'APPROVAL_WORKFLOW',
+        `Submitted request to ${payload.actionType} ${payload.entityType}`,
+        request.ip()
+      )
+    }
 
     return response.created({ data: approvalRequest })
   }
 
-  public async approve({ params, response, auth, request }: HttpContext) {
-    const admin = auth.user!
-    if (admin.role !== 'SUPER_ADMIN' && admin.role !== 'ADMIN') {
+  public async approve({ params, response, auth, request, user }: HttpContext | any) {
+    const admin = user || auth?.user
+    if (!admin || (admin.role !== 'SUPER_ADMIN' && admin.role !== 'ADMIN')) {
       return response.forbidden({ error: 'Only admins can approve requests.' })
     }
 
@@ -126,9 +130,9 @@ export default class ApprovalRequestsController {
     }
   }
 
-  public async reject({ params, request, response, auth }: HttpContext) {
-    const admin = auth.user!
-    if (admin.role !== 'SUPER_ADMIN' && admin.role !== 'ADMIN') {
+  public async reject({ params, request, response, auth, user }: HttpContext | any) {
+    const admin = user || auth?.user
+    if (!admin || (admin.role !== 'SUPER_ADMIN' && admin.role !== 'ADMIN')) {
       return response.forbidden({ error: 'Only admins can reject requests.' })
     }
 

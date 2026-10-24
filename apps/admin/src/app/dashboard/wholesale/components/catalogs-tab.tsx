@@ -21,17 +21,26 @@ export function CatalogsTab() {
       mutate()
       setOpen(false)
       setForm({ title: '', description: '', imageUrl: '', availableColors: '', dimensions: '', isPublished: false })
-    } catch (err) {
-      toast.error('Failed to add catalog')
+    } catch (err: any) {
+      if (err.response?.status === 413 || err.response?.data?.message?.includes('too large')) {
+        toast.error('The catalog image or data is too large. Please use a smaller image.')
+      } else {
+        toast.error(err.response?.data?.message || 'Failed to add catalog')
+      }
     } finally {
       setLoading(false)
     }
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete catalog?')) return
-    await api.delete(`/admin/wholesale/catalogs/${id}`)
-    mutate()
+    if (!confirm('Are you sure you want to delete this catalog?')) return
+    try {
+      await api.delete(`/admin/wholesale/catalogs/${id}`)
+      toast.success('Catalog deleted successfully')
+      mutate()
+    } catch (err: any) {
+      toast.error('Failed to delete catalog')
+    }
   }
 
   return (

@@ -21,6 +21,8 @@ export function AccountsTab() {
   if (error) return <div>Failed to load accounts</div>
   if (!profiles) return <div>Loading...</div>
 
+  const profileList = Array.isArray(profiles) ? profiles : Array.isArray((profiles as any)?.data) ? (profiles as any).data : []
+
   return (
     <div className="space-y-4">
       <div className="border rounded-lg bg-card overflow-hidden">
@@ -37,7 +39,7 @@ export function AccountsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {profiles.map((profile: any) => (
+            {profileList.map((profile: any) => (
               <TableRow key={profile.id}>
                 <TableCell className="font-medium">{profile.companyName}</TableCell>
                 <TableCell>{profile.user?.name}</TableCell>

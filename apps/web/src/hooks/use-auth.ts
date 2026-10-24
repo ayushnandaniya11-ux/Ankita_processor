@@ -10,7 +10,7 @@ import type { LoginRequest, RegisterRequest } from '@ankita/types'
 export function useAuth() {
   const { data: user, mutate, isLoading } = useSWR(
     '/auth/me',
-    () => authApi.me().then((r) => r.data).catch(() => null),
+    () => authApi.me().then((r: any) => r?.user || (r?.id ? r : r?.data) || null).catch(() => null),
     { revalidateOnFocus: false }
   )
 
@@ -45,6 +45,14 @@ export function useAuth() {
     [mutate]
   )
 
+  const resendOtp = useCallback(
+    async (payload: { userId: number }) => {
+      const result = await authApi.resendOtp(payload) as any
+      return result
+    },
+    []
+  )
+
   const logout = useCallback(async () => {
     try {
       await authApi.logout()
@@ -53,5 +61,5 @@ export function useAuth() {
     }
   }, [mutate])
 
-  return { user, isLoading, login, register, verifyOtp, logout, mutate }
+  return { user, isLoading, login, register, verifyOtp, resendOtp, logout, mutate }
 }

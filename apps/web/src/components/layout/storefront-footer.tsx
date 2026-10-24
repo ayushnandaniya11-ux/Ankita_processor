@@ -28,11 +28,20 @@ export function StorefrontFooter() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 flex flex-col items-start">
-            <Link href="/" className="inline-block mb-2 group">
-              <span className="font-heading font-bold text-3xl tracking-tight transition-colors group-hover:text-primary">
+            <Link href="/" className="flex items-center gap-3 mb-2 group" aria-label="Ankita Processors Home">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="Ankita Processors Logo"
+                width={56}
+                height={56}
+                className="h-12 w-12 object-contain select-none shrink-0"
+              />
+              <span className="font-heading font-bold text-2xl tracking-tight transition-colors group-hover:text-primary">
                 {APP_NAME}
               </span>
             </Link>
+
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               Premium women&apos;s clothing crafted with care. Celebrating Indian craftsmanship and modern style.
             </p>

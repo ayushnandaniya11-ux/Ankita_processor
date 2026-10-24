@@ -1,39 +1,54 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
-import encryption from '@adonisjs/core/services/encryption'
 import User from '#models/user'
+import UserSession from '#models/user_session'
+import SessionService from '#services/session_service'
 
 declare module '@adonisjs/core/http' {
   export interface HttpContext {
     user?: User
+    userSession?: UserSession
   }
 }
 
 export default class AuthMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
-    const token = ctx.request.cookie('authToken')
-    if (!token) {
-      return ctx.response.unauthorized({ error: { message: 'Unauthorized, missing token' } })
+    const rawToken = SessionService.extractSessionToken(ctx)
+
+    if (rawToken) {
+      const result = await SessionService.validateSession(rawToken)
+      if (result) {
+        ctx.user = result.user
+        ctx.userSession = result.session
+        if (ctx.auth) {
+          try {
+            ;(ctx.auth.use('web') as any).user = result.user
+          } catch {}
+        }
+        return next()
+      }
     }
 
-    try {
-      const payload = encryption.decrypt(token) as { userId: number }
-      if (!payload || !payload.userId) {
-        throw new Error('Invalid token payload')
+    // Attempt persistent Remember-Me token recovery if primary session was expired/missing
+    const recovered = await SessionService.consumeRememberMeToken(ctx)
+    if (recovered) {
+      ctx.user = recovered.user
+      ctx.userSession = recovered.session
+      if (ctx.auth) {
+        try {
+          ;(ctx.auth.use('web') as any).user = recovered.user
+        } catch {}
       }
-
-      const user = await User.find(payload.userId)
-      if (!user) {
-        throw new Error('User not found')
-      }
-
-      ctx.user = user
       return next()
-    } catch (error) {
-      ctx.response.clearCookie('authToken', { path: '/', sameSite: 'lax' })
-      return ctx.response.unauthorized({
-        error: { message: 'Unauthorized, invalid or expired token' },
-      })
     }
+
+    // If both failed, clean up any invalid cookies and reject
+    SessionService.clearSessionCookie(ctx)
+    return ctx.response.unauthorized({
+      error: {
+        code: 'SESSION_EXPIRED',
+        message: 'Unauthorized: Session missing, invalid, or expired',
+      },
+    })
   }
 }

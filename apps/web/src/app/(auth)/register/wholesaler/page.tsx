@@ -42,7 +42,13 @@ export default function WholesalerRegisterPage() {
       toast.success(res.data.message || 'Registration successful. Awaiting approval.')
       router.push('/login')
     } catch (err: any) {
-      const message = err?.response?.data?.error || err?.response?.data?.errors?.[0]?.message || 'Registration failed'
+      const resData = err?.response?.data
+      const message =
+        resData?.error?.message ||
+        resData?.errors?.[0]?.message ||
+        (typeof resData?.error === 'string' ? resData.error : null) ||
+        resData?.message ||
+        'Registration failed'
       toast.error(message)
     } finally {
       setIsSubmitting(false)

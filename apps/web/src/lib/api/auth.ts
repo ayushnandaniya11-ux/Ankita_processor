@@ -18,6 +18,11 @@ export const authApi = {
     return data
   },
 
+  resendOtp: async (payload: { userId: number }): Promise<any> => {
+    const { data } = await apiClient.post('/auth/resend-otp', payload)
+    return data
+  },
+
   logout: async (): Promise<ApiResponse<null>> => {
     const { data } = await apiClient.post(API_ENDPOINTS.auth.logout)
     return data
@@ -30,6 +35,13 @@ export const authApi = {
 
   forgotPassword: async (payload: ForgotPasswordRequest): Promise<ApiResponse<null>> => {
     const { data } = await apiClient.post(API_ENDPOINTS.auth.forgotPassword, payload)
+    return data
+  },
+
+  verifyResetToken: async (token: string): Promise<ApiResponse<{ valid: boolean; email?: string }>> => {
+    const { data } = await apiClient.get(API_ENDPOINTS.auth.verifyResetToken, {
+      params: { token },
+    })
     return data
   },
 

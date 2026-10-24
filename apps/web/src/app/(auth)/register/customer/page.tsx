@@ -29,13 +29,28 @@ export default function RegisterPage() {
       const result: any = await register(values)
       if (result?.requiresOtp) {
         toast.info('Please verify your email to complete registration.')
-        router.push(`/verify-otp?userId=${result.userId}`)
+        const debugParam = result.debugOtp ? `&debugOtp=${encodeURIComponent(result.debugOtp)}` : ''
+        router.push(`/verify-otp?userId=${result.userId}${debugParam}`)
         return
       }
       toast.success('Account created! Welcome to Ankita Processors.')
       router.push('/')
-    } catch (err: unknown) {
-      const message = (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message || 'Registration failed'
+    } catch (err: any) {
+      const resData = err?.response?.data
+      if (Array.isArray(resData?.errors)) {
+        for (const e of resData.errors) {
+          if (e.field && ['name', 'email', 'phone', 'password', 'confirmPassword'].includes(e.field)) {
+            form.setError(e.field as any, { message: e.message })
+          }
+        }
+      }
+      const message =
+        resData?.error?.message ||
+        resData?.errors?.[0]?.message ||
+        resData?.message ||
+        (typeof resData?.error === 'string' ? resData.error : null) ||
+        err?.message ||
+        'Registration failed. Please check your details and try again.'
       toast.error(message)
     }
   }

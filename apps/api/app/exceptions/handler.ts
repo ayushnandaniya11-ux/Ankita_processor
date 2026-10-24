@@ -13,6 +13,18 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      (('status' in error && (error as any).status === 413) ||
+        ('code' in error &&
+          ((error as any).code === 'E_REQUEST_ENTITY_TOO_LARGE' ||
+            (error as any).code === 'E_STREAM_LIMIT_EXCEEDED')))
+    ) {
+      return ctx.response.status(413).send({
+        message: 'Uploaded file or request payload is too large. Please upload smaller files (max 100MB).',
+      })
+    }
     return super.handle(error, ctx)
   }
 
