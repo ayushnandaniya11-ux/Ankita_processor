@@ -334,17 +334,28 @@ async function run() {
   y += 102
 
   // Signatory
-  invoiceDoc.roundedRect(startX, y, pageWidth, 46, 4).stroke(grayBorder)
+  const sigH = 58
+  invoiceDoc.roundedRect(startX, y, pageWidth, sigH, 4).stroke(grayBorder)
   invoiceDoc.fillColor(textMuted).fontSize(6.5).font('Helvetica')
   invoiceDoc.text('Terms & Conditions:', startX + 10, y + 6)
   invoiceDoc.text('1. Goods once sold are subject to company warranty & exchange policy.', startX + 10, y + 15)
   invoiceDoc.text('2. All disputes are subject to Jetpur/Rajkot jurisdiction only.', startX + 10, y + 24)
+  invoiceDoc.text('3. Computer-generated invoice under Section 31 of CGST Act, 2017.', startX + 10, y + 33)
+  invoiceDoc.text('4. Certified that the particulars given above are true and correct.', startX + 10, y + 42)
 
   invoiceDoc.fillColor(primaryColor).fontSize(8).font('Helvetica-Bold')
-  invoiceDoc.text('For ANKITA PROCESSORS', startX + 340, y + 8, { align: 'right', width: 165 })
-  invoiceDoc.fillColor(textMuted).fontSize(6.5).font('Helvetica')
-  invoiceDoc.text('[Digitally Signed Tax Invoice]', startX + 340, y + 24, { align: 'right', width: 165 })
-  invoiceDoc.text('Authorized Signatory', startX + 340, y + 33, { align: 'right', width: 165 })
+  invoiceDoc.text('For ANKITA PROCESSORS', startX + 340, y + 6, { align: 'right', width: 165 })
+
+  const sigPath = path.resolve('public/signature.png')
+  if (fs.existsSync(sigPath)) {
+    invoiceDoc.image(sigPath, startX + 395, y + 17, { width: 110, height: 25 })
+  } else {
+    invoiceDoc.fillColor(textMuted).fontSize(6.5).font('Helvetica')
+    invoiceDoc.text('[Digitally Signed Tax Invoice]', startX + 340, y + 24, { align: 'right', width: 165 })
+  }
+
+  invoiceDoc.fillColor(textMuted).fontSize(7).font('Helvetica-Bold')
+  invoiceDoc.text('Authorized Signatory', startX + 340, y + 45, { align: 'right', width: 165 })
 
   invoiceDoc.end()
   await new Promise((resolve) => invStream.on('finish', resolve))

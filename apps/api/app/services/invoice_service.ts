@@ -436,18 +436,35 @@ export class InvoiceService {
       y += bottomH + 10
 
       // 6. Signatory Section
-      const sigH = 46
+      const sigH = 58
       doc.roundedRect(startX, y, pageWidth, sigH, 4).stroke(grayBorder)
       doc.fillColor(textMuted).fontSize(6.5).font('Helvetica')
       doc.text('Terms & Conditions:', startX + 10, y + 6)
       doc.text('1. Goods once sold are subject to company warranty & exchange policy.', startX + 10, y + 15)
       doc.text('2. All disputes are subject to Jetpur/Rajkot jurisdiction only.', startX + 10, y + 24)
+      doc.text('3. Computer-generated invoice under Section 31 of CGST Act, 2017.', startX + 10, y + 33)
+      doc.text('4. Certified that the particulars given above are true and correct.', startX + 10, y + 42)
 
       doc.fillColor(primaryColor).fontSize(8).font('Helvetica-Bold')
-      doc.text('For ANKITA PROCESSORS', startX + 340, y + 8, { align: 'right', width: 165 })
-      doc.fillColor(textMuted).fontSize(6.5).font('Helvetica')
-      doc.text('[Digitally Signed Tax Invoice]', startX + 340, y + 24, { align: 'right', width: 165 })
-      doc.text('Authorized Signatory', startX + 340, y + 33, { align: 'right', width: 165 })
+      doc.text('For ANKITA PROCESSORS', startX + 340, y + 6, { align: 'right', width: 165 })
+
+      const signatureCandidates = [
+        app.makePath('public/signature.png'),
+        path.resolve(process.cwd(), 'public/signature.png'),
+        path.resolve(process.cwd(), '../admin/public/signature.png'),
+        path.resolve(process.cwd(), '../web/public/signature.png'),
+      ]
+      const sigPath = signatureCandidates.find((p) => fs.existsSync(p))
+
+      if (sigPath) {
+        doc.image(sigPath, startX + 395, y + 17, { width: 110, height: 25 })
+      } else {
+        doc.fillColor(textMuted).fontSize(6.5).font('Helvetica')
+        doc.text('[Digitally Signed Tax Invoice]', startX + 340, y + 24, { align: 'right', width: 165 })
+      }
+
+      doc.fillColor(textMuted).fontSize(7).font('Helvetica-Bold')
+      doc.text('Authorized Signatory', startX + 340, y + 45, { align: 'right', width: 165 })
 
       doc.end()
 

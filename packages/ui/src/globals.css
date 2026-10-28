@@ -134,10 +134,18 @@
     flex: 1;
     min-width: 0;
   }
+
+  .invoice-signature {
+    display: block;
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
 }
 
 @media print {
-  .invoice-logo {
+  .invoice-logo,
+  .invoice-signature {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }

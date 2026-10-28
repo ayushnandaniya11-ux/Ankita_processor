@@ -305,7 +305,7 @@ async function runTest() {
   console.log('\nStep 9: Testing Catalog Primary Image Update vs Order Historical Snapshot...');
   const newPrimaryImg = productA.images[1].url; // prodA_gallery2_green
   console.log('  Updating catalog primary image to Green gallery image:', path.basename(newPrimaryImg));
-  
+
   const updateRes = await makeRequest('PUT', `/admin/products/${productA.id}`, {
     'Content-Type': 'application/json',
     ...adminAuthHeaders,

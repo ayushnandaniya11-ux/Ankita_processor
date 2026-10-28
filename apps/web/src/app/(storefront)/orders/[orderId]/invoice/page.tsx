@@ -428,8 +428,12 @@ export default function CustomerInvoicePage() {
 
           <div className="text-right space-y-1">
             <p className="font-bold text-xs text-[#9C0B5E]">For Ankita Processors</p>
-            <div className="py-2 text-slate-400 italic text-[11px] font-serif">
-              Ankita Processors
+            <div className="py-1 flex justify-end">
+              <img
+                src="/signature.png"
+                alt="Authorized Signature"
+                className="h-10 w-auto object-contain invoice-signature"
+              />
             </div>
             <p className="text-[10px] text-slate-500 font-medium">Authorised Signatory</p>
           </div>
